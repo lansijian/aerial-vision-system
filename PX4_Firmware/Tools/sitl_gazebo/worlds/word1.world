@@ -1,0 +1,905 @@
+<?xml version="1.0" ?>
+<sdf version='1.6'>
+  <world name='word1'>
+    <!-- Ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+
+    <!-- Lighting and scene -->
+    <scene>
+      <ambient>0.4 0.4 0.4 1</ambient>
+      <background>0.7 0.7 0.7 1</background>
+      <shadows>1</shadows>
+    </scene>
+
+    <gravity>0 0 -9.8</gravity>
+
+    <!-- Sun light -->
+    <light name='sun' type='directional'>
+      <cast_shadows>1</cast_shadows>
+      <pose frame=''>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- Roads: 2x3 grid (3 vertical + 3 horizontal) -->
+    <road name='road_y_1'>
+      <width>7.0</width>
+      <point>-30 -50 0.02</point>
+      <point>-30 50 0.02</point>
+      <material>
+        <script>
+          <uri>file://media/materials/scripts/gazebo.material</uri>
+          <name>Gazebo/Residential</name>
+        </script>
+      </material>
+    </road>
+    <road name='road_y_2'>
+      <width>7.0</width>
+      <point>0 -50 0.02</point>
+      <point>0 50 0.02</point>
+      <material>
+        <script>
+          <uri>file://media/materials/scripts/gazebo.material</uri>
+          <name>Gazebo/Residential</name>
+        </script>
+      </material>
+    </road>
+    <road name='road_y_3'>
+      <width>7.0</width>
+      <point>30 -50 0.02</point>
+      <point>30 50 0.02</point>
+      <material>
+        <script>
+          <uri>file://media/materials/scripts/gazebo.material</uri>
+          <name>Gazebo/Residential</name>
+        </script>
+      </material>
+    </road>
+
+    <road name='road_x_1'>
+      <width>8.0</width>
+      <point>-50 -30 0.02</point>
+      <point>50 -30 0.02</point>
+      <material>
+        <script>
+          <uri>file://media/materials/scripts/gazebo.material</uri>
+          <name>Gazebo/Residential</name>
+        </script>
+      </material>
+    </road>
+    <road name='road_x_2'>
+      <width>8.0</width>
+      <point>-50 0 0.02</point>
+      <point>50 0 0.02</point>
+      <material>
+        <script>
+          <uri>file://media/materials/scripts/gazebo.material</uri>
+          <name>Gazebo/Residential</name>
+        </script>
+      </material>
+    </road>
+    <road name='road_x_3'>
+      <width>8.0</width>
+      <point>-50 30 0.02</point>
+      <point>50 30 0.02</point>
+      <material>
+        <script>
+          <uri>file://media/materials/scripts/gazebo.material</uri>
+          <name>Gazebo/Residential</name>
+        </script>
+      </material>
+    </road>
+
+    <!-- Street lights along roads (copied from robocup.world) -->
+    <model name='lamp_post_1'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://lamp_post/meshes/lamp_post.dae</uri>
+              <scale>3 3 3</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <contact>
+            <ode/>
+          </contact>
+          <bounce/>
+          <friction>
+            <torsional>
+              <ode/>
+            </torsional>
+            <ode/>
+          </friction>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://lamp_post/meshes/lamp_post.dae</uri>
+              <scale>3 3 3</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>-40 -40 0 0 -0 0</pose>
+    </model>
+    <model name='lamp_post_2'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://lamp_post/meshes/lamp_post.dae</uri>
+              <scale>3 3 3</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <contact>
+            <ode/>
+          </contact>
+          <bounce/>
+          <friction>
+            <torsional>
+              <ode/>
+            </torsional>
+            <ode/>
+          </friction>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://lamp_post/meshes/lamp_post.dae</uri>
+              <scale>3 3 3</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>-40 0 0 0 -0 0</pose>
+    </model>
+    <model name='lamp_post_3'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://lamp_post/meshes/lamp_post.dae</uri>
+              <scale>3 3 3</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <contact>
+            <ode/>
+          </contact>
+          <bounce/>
+          <friction>
+            <torsional>
+              <ode/>
+            </torsional>
+            <ode/>
+          </friction>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://lamp_post/meshes/lamp_post.dae</uri>
+              <scale>3 3 3</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>-40 40 0 0 -0 0</pose>
+    </model>
+    <model name='lamp_post_4'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://lamp_post/meshes/lamp_post.dae</uri>
+              <scale>3 3 3</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <contact>
+            <ode/>
+          </contact>
+          <bounce/>
+          <friction>
+            <torsional>
+              <ode/>
+            </torsional>
+            <ode/>
+          </friction>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://lamp_post/meshes/lamp_post.dae</uri>
+              <scale>3 3 3</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>0 -40 0 0 -0 0</pose>
+    </model>
+    <model name='lamp_post_5'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://lamp_post/meshes/lamp_post.dae</uri>
+              <scale>3 3 3</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <contact>
+            <ode/>
+          </contact>
+          <bounce/>
+          <friction>
+            <torsional>
+              <ode/>
+            </torsional>
+            <ode/>
+          </friction>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://lamp_post/meshes/lamp_post.dae</uri>
+              <scale>3 3 3</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>0 40 0 0 -0 0</pose>
+    </model>
+    <model name='lamp_post_6'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://lamp_post/meshes/lamp_post.dae</uri>
+              <scale>3 3 3</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <contact>
+            <ode/>
+          </contact>
+          <bounce/>
+          <friction>
+            <torsional>
+              <ode/>
+            </torsional>
+            <ode/>
+          </friction>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://lamp_post/meshes/lamp_post.dae</uri>
+              <scale>3 3 3</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>40 -40 0 0 -0 0</pose>
+    </model>
+    <model name='lamp_post_7'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://lamp_post/meshes/lamp_post.dae</uri>
+              <scale>3 3 3</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <contact>
+            <ode/>
+          </contact>
+          <bounce/>
+          <friction>
+            <torsional>
+              <ode/>
+            </torsional>
+            <ode/>
+          </friction>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://lamp_post/meshes/lamp_post.dae</uri>
+              <scale>3 3 3</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>40 0 0 0 -0 0</pose>
+    </model>
+    <model name='lamp_post_8'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://lamp_post/meshes/lamp_post.dae</uri>
+              <scale>3 3 3</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <contact>
+            <ode/>
+          </contact>
+          <bounce/>
+          <friction>
+            <torsional>
+              <ode/>
+            </torsional>
+            <ode/>
+          </friction>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://lamp_post/meshes/lamp_post.dae</uri>
+              <scale>3 3 3</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>40 40 0 0 -0 0</pose>
+    </model>
+
+    <!-- Grass areas in street blocks -->
+    <model name='grass_block_sw'>
+      <static>1</static>
+      <pose frame=''>-15 -15 0.01 0 0 0</pose>
+      <link name='link'>
+        <visual name='visual'>
+          <geometry>
+            <box>
+              <size>20 20 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grass</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name='grass_block_se'>
+      <static>1</static>
+      <pose frame=''>15 -15 0.01 0 0 0</pose>
+      <link name='link'>
+        <visual name='visual'>
+          <geometry>
+            <box>
+              <size>20 20 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grass</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name='grass_block_nw'>
+      <static>1</static>
+      <pose frame=''>-15 15 0.01 0 0 0</pose>
+      <link name='link'>
+        <visual name='visual'>
+          <geometry>
+            <box>
+              <size>20 20 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grass</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name='grass_block_ne'>
+      <static>1</static>
+      <pose frame=''>15 15 0.01 0 0 0</pose>
+      <link name='link'>
+        <visual name='visual'>
+          <geometry>
+            <box>
+              <size>20 20 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grass</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Houses from robocup.world -->
+    <model name='house_1_sw'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://house_1/meshes/house_1.dae</uri>
+              <scale>1.5 1.5 1.5</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <contact>
+            <ode/>
+          </contact>
+          <bounce/>
+          <friction>
+            <torsional>
+              <ode/>
+            </torsional>
+            <ode/>
+          </friction>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://house_1/meshes/house_1.dae</uri>
+              <scale>1.5 1.5 1.5</scale>
+            </mesh>
+          </geometry>
+          <material>
+            <script>
+              <uri>model://house_1/materials/scripts</uri>
+              <uri>model://house_1/materials/textures</uri>
+              <name>House_1/Diffuse</name>
+            </script>
+            <shader type='normal_map_tangent_space'>
+              <normal_map>House_1_Normal.png</normal_map>
+            </shader>
+          </material>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>-15 -15 0 0 0 -1.57</pose>
+    </model>
+    <model name='house_2_se'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://house_2/meshes/house_2.dae</uri>
+              <scale>1.5 1.5 1.5</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <contact>
+            <ode/>
+          </contact>
+          <bounce/>
+          <friction>
+            <torsional>
+              <ode/>
+            </torsional>
+            <ode/>
+          </friction>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://house_2/meshes/house_2.dae</uri>
+              <scale>1.5 1.5 1.5</scale>
+            </mesh>
+          </geometry>
+          <material>
+            <script>
+              <uri>model://house_2/materials/textures</uri>
+              <uri>model://house_1/materials/textures</uri>
+              <name>House_2/Diffuse</name>
+            </script>
+            <shader type='normal_map_tangent_space'>
+              <normal_map>model://house_1/materials/textures/House_1_Normal.png</normal_map>
+            </shader>
+          </material>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>15 -15 0 0 0 0</pose>
+    </model>
+    <model name='house_3_nw'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://house_3/meshes/house_3.dae</uri>
+              <scale>1.5 1.5 1.5</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <contact>
+            <ode/>
+          </contact>
+          <bounce/>
+          <friction>
+            <torsional>
+              <ode/>
+            </torsional>
+            <ode/>
+          </friction>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://house_3/meshes/house_3.dae</uri>
+              <scale>1.5 1.5 1.5</scale>
+            </mesh>
+          </geometry>
+          <material>
+            <script>
+              <uri>model://house_3/materials/textures</uri>
+              <uri>model://house_1/materials/textures</uri>
+              <name>House_3/Diffuse</name>
+            </script>
+            <shader type='normal_map_tangent_space'>
+              <normal_map>model://house_1/materials/textures/House_1_Normal.png</normal_map>
+            </shader>
+          </material>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>-15 15 0 0 0 3.14</pose>
+    </model>
+    <model name='house_1_ne'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://house_1/meshes/house_1.dae</uri>
+              <scale>1.5 1.5 1.5</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <contact>
+            <ode/>
+          </contact>
+          <bounce/>
+          <friction>
+            <torsional>
+              <ode/>
+            </torsional>
+            <ode/>
+          </friction>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://house_1/meshes/house_1.dae</uri>
+              <scale>1.5 1.5 1.5</scale>
+            </mesh>
+          </geometry>
+          <material>
+            <script>
+              <uri>model://house_1/materials/scripts</uri>
+              <uri>model://house_1/materials/textures</uri>
+              <name>House_1/Diffuse</name>
+            </script>
+            <shader type='normal_map_tangent_space'>
+              <normal_map>House_1_Normal.png</normal_map>
+            </shader>
+          </material>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose frame=''>15 15 0 0 0 -1.57</pose>
+    </model>
+
+    <!-- Terrorist models (using walker as base) -->
+    <actor name="terrorist_1">
+      <plugin name="actor_collisions_plugin" filename="libActorCollisionsPlugin.so">
+        <scaling collision="LHipJoint_LeftUpLeg_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="LeftUpLeg_LeftLeg_collision" scale="8.0 8.0 1.0"/>
+        <scaling collision="LeftLeg_LeftFoot_collision" scale="8.0 8.0 1.0"/>
+        <scaling collision="LeftFoot_LeftToeBase_collision" scale="4.0 4.0 1.5"/>
+        <scaling collision="RHipJoint_RightUpLeg_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="RightUpLeg_RightLeg_collision" scale="8.0 8.0 1.0"/>
+        <scaling collision="RightLeg_RightFoot_collision" scale="8.0 8.0 1.0"/>
+        <scaling collision="RightFoot_RightToeBase_collision" scale="4.0 4.0 1.5"/>
+        <scaling collision="LowerBack_Spine_collision" scale="12.0 20.0 5.0 "/>
+        <scaling collision="Spine_Spine1_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="Neck_Neck1_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="Neck1_Head_collision" scale="5.0 5.0 3.0"/>
+        <scaling collision="LeftShoulder_LeftArm_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="LeftArm_LeftForeArm_collision" scale="5.0 5.0 1.0"/>
+        <scaling collision="LeftForeArm_LeftHand_collision" scale="5.0 5.0 1.0"/>
+        <scaling collision="LeftFingerBase_LeftHandIndex1_collision" scale="4.0 4.0 3.0"/>
+        <scaling collision="RightShoulder_RightArm_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="RightArm_RightForeArm_collision" scale="5.0 5.0 1.0"/>
+        <scaling collision="RightForeArm_RightHand_collision" scale="5.0 5.0 1.0"/>
+        <scaling collision="RightFingerBase_RightHandIndex1_collision" scale="4.0 4.0 3.0"/>
+      </plugin>
+      <skin>
+        <filename>model://walker/walk_0.dae</filename>
+        <scale>1.0</scale>
+      </skin>
+      <animation name="walking">
+        <filename>model://walker/walk_0.dae</filename>
+        <scale>1.000000</scale>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <script>
+        <loop>true</loop>
+        <delay_start>0.0</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id='0' type='walking'>
+          <waypoint>
+            <time>0.0</time>
+            <pose>-30 0 0.0 0 0 0</pose>
+          </waypoint>
+          <waypoint>
+            <time>10.0</time>
+            <pose>0 0 0.0 0 0 0</pose>
+          </waypoint>
+          <waypoint>
+            <time>20.0</time>
+            <pose>30 0 0.0 0 0 0</pose>
+          </waypoint>
+          <waypoint>
+            <time>30.0</time>
+            <pose>0 0 0.0 0 0 3.14</pose>
+          </waypoint>
+          <waypoint>
+            <time>40.0</time>
+            <pose>-30 0 0.0 0 0 3.14</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+
+
+    <!-- Walking pedestrians (3), using walker model and trajectories -->
+    <actor name="walking_0">
+      <plugin name="actor_collisions_plugin" filename="libActorCollisionsPlugin.so">
+        <scaling collision="LHipJoint_LeftUpLeg_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="LeftUpLeg_LeftLeg_collision" scale="8.0 8.0 1.0"/>
+        <scaling collision="LeftLeg_LeftFoot_collision" scale="8.0 8.0 1.0"/>
+        <scaling collision="LeftFoot_LeftToeBase_collision" scale="4.0 4.0 1.5"/>
+        <scaling collision="RHipJoint_RightUpLeg_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="RightUpLeg_RightLeg_collision" scale="8.0 8.0 1.0"/>
+        <scaling collision="RightLeg_RightFoot_collision" scale="8.0 8.0 1.0"/>
+        <scaling collision="RightFoot_RightToeBase_collision" scale="4.0 4.0 1.5"/>
+        <scaling collision="LowerBack_Spine_collision" scale="12.0 20.0 5.0 "/>
+        <scaling collision="Spine_Spine1_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="Neck_Neck1_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="Neck1_Head_collision" scale="5.0 5.0 3.0"/>
+        <scaling collision="LeftShoulder_LeftArm_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="LeftArm_LeftForeArm_collision" scale="5.0 5.0 1.0"/>
+        <scaling collision="LeftForeArm_LeftHand_collision" scale="5.0 5.0 1.0"/>
+        <scaling collision="LeftFingerBase_LeftHandIndex1_collision" scale="4.0 4.0 3.0"/>
+        <scaling collision="RightShoulder_RightArm_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="RightArm_RightForeArm_collision" scale="5.0 5.0 1.0"/>
+        <scaling collision="RightForeArm_RightHand_collision" scale="5.0 5.0 1.0"/>
+        <scaling collision="RightFingerBase_RightHandIndex1_collision" scale="4.0 4.0 3.0"/>
+      </plugin>
+      <skin>
+        <filename>model://walker/walk_0.dae</filename>
+        <scale>1.0</scale>
+      </skin>
+      <animation name="walking">
+        <filename>model://walker/walk_0.dae</filename>
+        <scale>1.000000</scale>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <script>
+        <loop>true</loop>
+        <delay_start>0.0</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id='0' type='walking'>
+          <waypoint>
+            <time>0.0</time>
+            <pose>-30 -30 0.0 0 0 1.57</pose>
+          </waypoint>
+          <waypoint>
+            <time>8.0</time>
+            <pose>-30 0 0.0 0 0 1.57</pose>
+          </waypoint>
+          <waypoint>
+            <time>16.0</time>
+            <pose>-30 30 0.0 0 0 1.57</pose>
+          </waypoint>
+          <waypoint>
+            <time>24.0</time>
+            <pose>-30 0 0.0 0 0 -1.57</pose>
+          </waypoint>
+          <waypoint>
+            <time>32.0</time>
+            <pose>-30 -30 0.0 0 0 -1.57</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+
+    <actor name="walking_1">
+      <plugin name="actor_collisions_plugin" filename="libActorCollisionsPlugin.so">
+        <scaling collision="LHipJoint_LeftUpLeg_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="LeftUpLeg_LeftLeg_collision" scale="8.0 8.0 1.0"/>
+        <scaling collision="LeftLeg_LeftFoot_collision" scale="8.0 8.0 1.0"/>
+        <scaling collision="LeftFoot_LeftToeBase_collision" scale="4.0 4.0 1.5"/>
+        <scaling collision="RHipJoint_RightUpLeg_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="RightUpLeg_RightLeg_collision" scale="8.0 8.0 1.0"/>
+        <scaling collision="RightLeg_RightFoot_collision" scale="8.0 8.0 1.0"/>
+        <scaling collision="RightFoot_RightToeBase_collision" scale="4.0 4.0 1.5"/>
+        <scaling collision="LowerBack_Spine_collision" scale="12.0 20.0 5.0 "/>
+        <scaling collision="Spine_Spine1_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="Neck_Neck1_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="Neck1_Head_collision" scale="5.0 5.0 3.0"/>
+        <scaling collision="LeftShoulder_LeftArm_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="LeftArm_LeftForeArm_collision" scale="5.0 5.0 1.0"/>
+        <scaling collision="LeftForeArm_LeftHand_collision" scale="5.0 5.0 1.0"/>
+        <scaling collision="LeftFingerBase_LeftHandIndex1_collision" scale="4.0 4.0 3.0"/>
+        <scaling collision="RightShoulder_RightArm_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="RightArm_RightForeArm_collision" scale="5.0 5.0 1.0"/>
+        <scaling collision="RightForeArm_RightHand_collision" scale="5.0 5.0 1.0"/>
+        <scaling collision="RightFingerBase_RightHandIndex1_collision" scale="4.0 4.0 3.0"/>
+      </plugin>
+      <skin>
+        <filename>model://walker/walk_1.dae</filename>
+        <scale>1.0</scale>
+      </skin>
+      <animation name="walking">
+        <filename>model://walker/walk_1.dae</filename>
+        <scale>1.000000</scale>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <script>
+        <loop>true</loop>
+        <delay_start>1.0</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id='0' type='walking'>
+          <waypoint>
+            <time>0.0</time>
+            <pose>30 30 0.0 0 0 -1.57</pose>
+          </waypoint>
+          <waypoint>
+            <time>8.0</time>
+            <pose>30 0 0.0 0 0 -1.57</pose>
+          </waypoint>
+          <waypoint>
+            <time>16.0</time>
+            <pose>30 -30 0.0 0 0 -1.57</pose>
+          </waypoint>
+          <waypoint>
+            <time>24.0</time>
+            <pose>30 0 0.0 0 0 1.57</pose>
+          </waypoint>
+          <waypoint>
+            <time>32.0</time>
+            <pose>30 30 0.0 0 0 1.57</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+
+    <actor name="walking_2">
+      <plugin name="actor_collisions_plugin" filename="libActorCollisionsPlugin.so">
+        <scaling collision="LHipJoint_LeftUpLeg_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="LeftUpLeg_LeftLeg_collision" scale="8.0 8.0 1.0"/>
+        <scaling collision="LeftLeg_LeftFoot_collision" scale="8.0 8.0 1.0"/>
+        <scaling collision="LeftFoot_LeftToeBase_collision" scale="4.0 4.0 1.5"/>
+        <scaling collision="RHipJoint_RightUpLeg_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="RightUpLeg_RightLeg_collision" scale="8.0 8.0 1.0"/>
+        <scaling collision="RightLeg_RightFoot_collision" scale="8.0 8.0 1.0"/>
+        <scaling collision="RightFoot_RightToeBase_collision" scale="4.0 4.0 1.5"/>
+        <scaling collision="LowerBack_Spine_collision" scale="12.0 20.0 5.0 "/>
+        <scaling collision="Spine_Spine1_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="Neck_Neck1_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="Neck1_Head_collision" scale="5.0 5.0 3.0"/>
+        <scaling collision="LeftShoulder_LeftArm_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="LeftArm_LeftForeArm_collision" scale="5.0 5.0 1.0"/>
+        <scaling collision="LeftForeArm_LeftHand_collision" scale="5.0 5.0 1.0"/>
+        <scaling collision="LeftFingerBase_LeftHandIndex1_collision" scale="4.0 4.0 3.0"/>
+        <scaling collision="RightShoulder_RightArm_collision" scale="0.01 0.001 0.001"/>
+        <scaling collision="RightArm_RightForeArm_collision" scale="5.0 5.0 1.0"/>
+        <scaling collision="RightForeArm_RightHand_collision" scale="5.0 5.0 1.0"/>
+        <scaling collision="RightFingerBase_RightHandIndex1_collision" scale="4.0 4.0 3.0"/>
+      </plugin>
+      <skin>
+        <filename>model://walker/walk_2.dae</filename>
+        <scale>1.0</scale>
+      </skin>
+      <animation name="walking">
+        <filename>model://walker/walk_2.dae</filename>
+        <scale>1.000000</scale>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <script>
+        <loop>true</loop>
+        <delay_start>2.0</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id='0' type='walking'>
+          <waypoint>
+            <time>0.0</time>
+            <pose>0 -30 0.0 0 0 0</pose>
+          </waypoint>
+          <waypoint>
+            <time>8.0</time>
+            <pose>0 0 0.0 0 0 0</pose>
+          </waypoint>
+          <waypoint>
+            <time>16.0</time>
+            <pose>0 30 0.0 0 0 0</pose>
+          </waypoint>
+          <waypoint>
+            <time>24.0</time>
+            <pose>0 0 0.0 0 0 3.14</pose>
+          </waypoint>
+          <waypoint>
+            <time>32.0</time>
+            <pose>0 -30 0.0 0 0 3.14</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+
+  </world>
+</sdf>
