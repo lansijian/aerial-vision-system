@@ -215,6 +215,13 @@ site/
 # yolo11n_auto_annotated/
 # Mydataset/original_dataset/
 
+# Mydataset训练权重（忽略训练中间文件，只保留最佳模型）
+Mydataset/yolo11s_custom/weights/epoch*.pt
+Mydataset/yolo11s_custom/weights/last*.pt
+!Mydataset/yolo11s_custom/weights/best.pt
+Mydataset/**/runs/
+Mydataset/**/weights/epoch*.pt
+
 # 测试生成的文件
 test_output/
 debug_images/
