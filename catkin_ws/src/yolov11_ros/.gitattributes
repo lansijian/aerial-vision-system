@@ -1,0 +1,8 @@
+# 确保Python脚本使用LF换行符
+*.py text eol=lf
+*.sh text eol=lf
+*.launch text eol=lf
+
+# Windows批处理文件保持CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf

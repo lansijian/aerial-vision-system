@@ -1,0 +1,12 @@
+# YOLOv11 数据集配置文件
+# 只包含数据集相关信息，训练参数在训练命令中指定
+
+train: E:/robocup2025/Mydataset/data/train.txt
+val: E:/robocup2025/Mydataset/data/val.txt
+test: E:/robocup2025/Mydataset/data/test.txt
+
+# 类别数量
+nc: 1
+
+# 类别名称
+names: ['human']

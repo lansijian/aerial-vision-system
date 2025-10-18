@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<launch>
+  <!-- 加载参数 -->
+  <param name="use_gpu" value="false" />
+  
+  <!-- 车辆参数 -->
+  <arg name="vehicle_type" default="typhoon_h480" />
+  <arg name="vehicle_id" default="0" />
+  
+  <!-- YOLO检测参数 -->
+  <arg name="yolo_weight_path" default="$(find yolov11_ros)/weights/best.pt" />
+  <arg name="yolo_conf" default="0.4" />
+  <arg name="yolo_visualize" default="true" />
+  
+  <!-- 街道巡航参数 -->
+  <arg name="forward_velocity" default="5.0" />
+  <arg name="max_forward_velocity" default="6.0" />
+  <arg name="lateral_velocity" default="2.0" />
+  <arg name="takeoff_altitude" default="3.0" />
+  
+  <!-- 街道跟踪参数 -->
+  <arg name="street_center_threshold" default="0.1" />
+  <arg name="street_tracking_gain" default="1.5" />
+  
+  <!-- 路口处理参数 -->
+  <arg name="intersection_stop_distance" default="10.0" />
+  <arg name="turn_angle" default="90.0" />
+  
+  <!-- 行人跟踪参数 -->
+  <arg name="human_tracking_enabled" default="true" />
+  <arg name="human_tracking_speed" default="2.0" />
+  <arg name="human_center_threshold" default="0.15" />
+  <arg name="human_tracking_timeout" default="10.0" />
+  
+  <!-- 检测类别配置 -->
+  <arg name="street_classes" default="['road', 'street', 'highway']" />
+  <arg name="intersection_classes" default="['intersection', 'crossroad', 'junction']" />
+  <arg name="human_classes" default="['human', 'person', 'pedestrian']" />
+  
+  <!-- 启动YOLO检测节点 - 用于行人跟踪 -->
+  <node pkg="yolov11_ros" type="yolo_v11.py" name="yolov11_ros" output="screen">
+    <param name="weight_path" value="$(arg yolo_weight_path)"/>
+    <param name="image_topic" value="/$(arg vehicle_type)_$(arg vehicle_id)/cgo3_camera/image_raw" />
+    <param name="pub_topic" value="/yolov11/BoundingBoxes" />
+    <param name="camera_frame" value="camera_color_frame"/>
+    <param name="visualize" value="$(arg yolo_visualize)"/>
+    <param name="conf" value="$(arg yolo_conf)" />
+    <param name="imgsz" value="640" />
+    <env name="PATH" value="/home/cty/miniconda3/envs/yolov11/bin:$(env PATH)" />
+    <env name="PYTHONPATH" value="/home/cty/miniconda3/envs/yolov11/lib/python3.8/site-packages:$(env PYTHONPATH)" />
+  </node>
+
+  <!-- 启动街道巡航控制节点 -->
+  <node pkg="yolov11_ros" type="street_cruise_yolo.py" name="street_cruise_yolo" output="screen">
+    <!-- 启用图像显示 -->
+    <env name="DISPLAY" value=":0" />
+    <param name="show_debug_image" value="true" />
+    <!-- 基础参数 -->
+    <param name="vehicle_type" value="$(arg vehicle_type)" />
+    <param name="vehicle_id" value="$(arg vehicle_id)" />
+    <param name="rate" value="30" />
+    
+    <!-- 话题配置 - 参考autonomous_street_cruise.py -->
+    <param name="image_topic" value="/$(arg vehicle_type)_$(arg vehicle_id)/cgo3_camera/image_raw" />
+    <param name="pose_topic" value="/$(arg vehicle_type)_$(arg vehicle_id)/mavros/local_position/pose" />
+    <param name="gps_topic" value="/$(arg vehicle_type)_$(arg vehicle_id)/mavros/global_position/global" />
+    <param name="bboxes_topic" value="/yolov11/BoundingBoxes" />
+    
+    <!-- YOLO检测参数 -->
+    <param name="yolo_weight_path" value="$(arg yolo_weight_path)" />
+    <param name="det_conf_threshold" value="0.35" />
+    <param name="street_classes" value="$(arg street_classes)" />
+    <param name="intersection_classes" value="$(arg intersection_classes)" />
+    <param name="human_classes" value="$(arg human_classes)" />
+    
+    <!-- 飞行控制参数 -->
+    <param name="forward_velocity" value="$(arg forward_velocity)" />
+    <param name="max_forward_velocity" value="$(arg max_forward_velocity)" />
+    <param name="lateral_velocity" value="$(arg lateral_velocity)" />
+    <param name="yaw_rate_limit" value="1.0" />
+    
+    <!-- 街道跟踪参数 -->
+    <param name="street_center_threshold" value="$(arg street_center_threshold)" />
+    <param name="street_tracking_gain" value="$(arg street_tracking_gain)" />
+    
+    <!-- 路口处理参数 -->
+    <param name="intersection_stop_distance" value="$(arg intersection_stop_distance)" />
+    <param name="turn_angle" value="$(arg turn_angle)" />
+    
+    <!-- 行人跟踪参数 -->
+    <param name="human_tracking_enabled" value="$(arg human_tracking_enabled)" />
+    <param name="human_tracking_speed" value="$(arg human_tracking_speed)" />
+    <param name="human_center_threshold" value="$(arg human_center_threshold)" />
+    <param name="human_tracking_timeout" value="$(arg human_tracking_timeout)" />
+    
+    <!-- 起飞参数 -->
+    <param name="takeoff_altitude" value="$(arg takeoff_altitude)" />
+    <param name="takeoff_timeout_s" value="20.0" />
+    <param name="hover_yaw" value="0.0" />
+    
+    <!-- 图像质量参数 -->
+    <param name="image_quality_mode" value="high" />  <!-- high, medium, low -->
+    <param name="enable_image_upscaling" value="true" />
+    <param name="target_image_width" value="1280" />
+    <param name="target_image_height" value="720" />
+    
+    <!-- 日志参数 -->
+    <param name="csv_path" value="/tmp/street_cruise_yolo_log.csv" />
+    <param name="log_interval_s" value="1.0" />
+  </node>
+
+  <!-- 可选：启动图像查看工具 -->
+  <!-- 方式1: 使用rqt_image_view（需要PyQt5） -->
+  <!-- <node pkg="rqt_image_view" type="rqt_image_view" name="rqt_image_view" args="/street_cruise_yolo/debug_image" /> -->
+  
+  <!-- 方式2: 使用image_view（无需额外依赖） -->
+  <!-- <node pkg="image_view" type="image_view" name="image_view" args="image:=/street_cruise_yolo/debug_image" /> -->
+  
+  <!-- 方式3: 使用image_view查看YOLO检测结果 -->
+  <!-- <node pkg="image_view" type="image_view" name="yolo_image_view" args="image:=/yolov11/detection_image" /> -->
+
+</launch>

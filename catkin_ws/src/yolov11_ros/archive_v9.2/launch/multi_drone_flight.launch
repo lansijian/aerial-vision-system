@@ -1,0 +1,233 @@
+<!--
+多无人机协同巡检启动文件
+功能:
+1. 启动YOLO检测节点（全局共享）
+2. 为每架无人机启动完整节点组：
+   - 协调器（防重复追踪）
+   - 航点飞行控制
+   - 人体跟踪
+   - 避障系统
+3. 支持2-6架无人机扩展
+
+使用方法:
+roslaunch yolov11_ros multi_drone_flight.launch num_drones:=2
+
+参数:
+- num_drones: 无人机数量（默认2）
+-->
+
+<launch>
+    <!-- ============= 全局参数 ============= -->
+    <arg name="num_drones" default="2" />
+    <arg name="waypoint_dir" default="$(find yolov11_ros)/waypoints" />
+    <arg name="weights_path" default="$(find yolov11_ros)/weights/best.pt" />
+    
+    <!-- ============= 全局共享节点 ============= -->
+    
+    <!-- 云台控制节点 - 无人机0 -->
+    <!-- args格式: "vehicle_type vehicle_id" -->
+    <!-- 脚本内部组合为: typhoon_h480_0 -->
+    <!-- 对应Gazebo模型: typhoon_h480_0（UDP端口13030） -->
+    <node name="gimbal_control_typhoon_h480_0" pkg="yolov11_ros" type="gimbal_control.py" args="typhoon_h480 0" output="screen" />
+    
+    <!-- 云台控制节点 - 无人机1 -->
+    <!-- args格式: "vehicle_type vehicle_id" -->
+    <!-- 脚本内部组合为: typhoon_h480_1 -->
+    <!-- 对应Gazebo模型: typhoon_h480_1（UDP端口13031） -->
+    <node name="gimbal_control_typhoon_h480_1" pkg="yolov11_ros" type="gimbal_control.py" args="typhoon_h480 1" output="screen" />
+    
+    <!-- YOLO检测节点 - 无人机0（处理第一架图像） -->
+    <node name="yolo_v11_drone0" pkg="yolov11_ros" type="yolo_v11.py" output="screen">
+        <!-- Python环境配置 -->
+        <env name="PATH" value="/home/cty/miniconda3/envs/yolov11/bin:$(env PATH)" />
+        <env name="PYTHONPATH" value="/home/cty/miniconda3/envs/yolov11/lib/python3.8/site-packages:$(env PYTHONPATH)" />
+        <env name="CONDA_DEFAULT_ENV" value="yolov11" />
+        
+        <param name="weight_path" value="$(arg weights_path)" />
+        <param name="image_topic" value="/typhoon_h480_0/cgo3_camera/image_raw" />
+        <param name="pub_topic" value="/yolov11/bounding_boxes" />
+        <param name="camera_frame" value="cgo3_camera_optical_frame" />
+        <param name="conf" value="0.3" />
+        <param name="visualize" value="true" />
+        <!-- 设置窗口名称，便于区分 -->
+        <param name="window_name" value="YOLOv11 Detection - Drone 0" />
+    </node>
+    
+    <!-- YOLO检测节点 - 无人机1（处理第二架图像） -->
+    <node name="yolo_v11_drone1" pkg="yolov11_ros" type="yolo_v11.py" output="screen">
+        <!-- Python环境配置 -->
+        <env name="PATH" value="/home/cty/miniconda3/envs/yolov11/bin:$(env PATH)" />
+        <env name="PYTHONPATH" value="/home/cty/miniconda3/envs/yolov11/lib/python3.8/site-packages:$(env PYTHONPATH)" />
+        <env name="CONDA_DEFAULT_ENV" value="yolov11" />
+        
+        <param name="weight_path" value="$(arg weights_path)" />
+        <param name="image_topic" value="/typhoon_h480_1/cgo3_camera/image_raw" />
+        <param name="pub_topic" value="/yolov11/bounding_boxes_drone1" />
+        <param name="camera_frame" value="cgo3_camera_optical_frame" />
+        <param name="conf" value="0.3" />
+        <param name="visualize" value="true" />
+        <!-- 设置窗口名称，便于区分 -->
+        <param name="window_name" value="YOLOv11 Detection - Drone 1" />
+    </node>
+    
+    <!-- RoboCup记分系统节点（新版本，带进度显示） -->
+    <node name="score_cal" pkg="yolov11_ros" type="robocup_score_cal.py" args="typhoon_h480" output="screen" respawn="false">
+        <!-- Python环境配置 -->
+        <env name="PATH" value="/home/cty/miniconda3/envs/yolov11/bin:$(env PATH)" />
+        <env name="PYTHONPATH" value="/home/cty/miniconda3/envs/yolov11/lib/python3.8/site-packages:$(env PYTHONPATH)" />
+        <env name="CONDA_DEFAULT_ENV" value="yolov11" />
+        
+        <!-- 记分系统参数 -->
+        <param name="actor_num" value="6" />
+        <param name="err_threshold" value="2.0" />
+        <param name="detection_time" value="8.0" />
+        <param name="sensor_cost" value="700.0" />
+        <param name="timeout_sec" value="600" />
+    </node>
+    
+    <!-- ============= 无人机0节点组 ============= -->
+    <group ns="drone_0">
+        <param name="drone_id" value="0" />
+        <param name="num_drones" value="$(arg num_drones)" />
+        <param name="vehicle_ns" value="typhoon_h480_0" />
+        
+        <!-- 协调器 -->
+        <node name="coordinator" pkg="yolov11_ros" type="multi_drone_coordinator.py" output="screen">
+            <param name="drone_id" value="0" />
+            <param name="num_drones" value="$(arg num_drones)" />
+            <param name="vehicle_ns" value="typhoon_h480_0" />
+            <param name="same_target_threshold" value="5.0" />
+            <param name="claim_timeout" value="3.0" />
+        </node>
+        
+        <!-- 航点飞行 -->
+        <node name="waypoint_flight" pkg="yolov11_ros" type="waypoint_flight.py" output="screen">
+            <param name="drone_id" value="0" />
+            <param name="num_drones" value="$(arg num_drones)" />
+            <param name="vehicle_ns" value="typhoon_h480_0" />
+            <param name="waypoint_file" value="$(arg waypoint_dir)/waypoints_drone_0.json" />
+            <param name="takeoff_altitude" value="3.0" />
+            <param name="waypoint_velocity" value="5.0" />
+            <param name="waypoint_reached_threshold" value="2.0" />
+        </node>
+        
+        <!-- 人体跟踪（使用无人机0的检测结果） -->
+        <node name="human_tracker" pkg="yolov11_ros" type="human_tracker.py" output="screen">
+            <param name="drone_id" value="0" />
+            <param name="num_drones" value="$(arg num_drones)" />
+            <param name="vehicle_ns" value="typhoon_h480_0" />
+            <param name="detection_topic" value="/yolov11/bounding_boxes" />
+            <param name="pose_topic" value="/typhoon_h480_0/mavros/local_position/pose" />
+            <param name="detection_confidence" value="0.3" />
+        </node>
+    </group>
+    
+    <!-- ============= 无人机1节点组 ============= -->
+    <group ns="drone_1">
+        <param name="drone_id" value="1" />
+        <param name="num_drones" value="$(arg num_drones)" />
+        <param name="vehicle_ns" value="typhoon_h480_1" />
+        
+        <!-- 协调器 -->
+        <node name="coordinator" pkg="yolov11_ros" type="multi_drone_coordinator.py" output="screen">
+            <param name="drone_id" value="1" />
+            <param name="num_drones" value="$(arg num_drones)" />
+            <param name="vehicle_ns" value="typhoon_h480_1" />
+            <param name="same_target_threshold" value="5.0" />
+            <param name="claim_timeout" value="3.0" />
+        </node>
+        
+        <!-- 航点飞行 -->
+        <node name="waypoint_flight" pkg="yolov11_ros" type="waypoint_flight.py" output="screen">
+            <param name="drone_id" value="1" />
+            <param name="num_drones" value="$(arg num_drones)" />
+            <param name="vehicle_ns" value="typhoon_h480_1" />
+            <param name="waypoint_file" value="$(arg waypoint_dir)/waypoints_drone_1.json" />
+            <param name="takeoff_altitude" value="3.0" />
+            <param name="waypoint_velocity" value="5.0" />
+            <param name="waypoint_reached_threshold" value="2.0" />
+        </node>
+        
+        <!-- 人体跟踪（使用无人机1的检测结果） -->
+        <node name="human_tracker" pkg="yolov11_ros" type="human_tracker.py" output="screen">
+            <param name="drone_id" value="1" />
+            <param name="num_drones" value="$(arg num_drones)" />
+            <param name="vehicle_ns" value="typhoon_h480_1" />
+            <param name="detection_topic" value="/yolov11/bounding_boxes_drone1" />
+            <param name="pose_topic" value="/typhoon_h480_1/mavros/local_position/pose" />
+            <param name="detection_confidence" value="0.3" />
+        </node>
+    </group>
+    
+    <!-- ============= 扩展：无人机2-5（预留接口） ============= -->
+    <!-- 根据需要取消注释以下部分以支持更多无人机 -->
+    
+    <!-- 无人机2节点组
+    <group ns="drone_2" if="$(eval arg('num_drones') >= 3)">
+        <param name="drone_id" value="2" />
+        <param name="num_drones" value="$(arg num_drones)" />
+        <param name="vehicle_ns" value="typhoon_h480_2" />
+        
+        <node name="coordinator" pkg="yolov11_ros" type="multi_drone_coordinator.py" output="screen">
+            <param name="drone_id" value="2" />
+            <param name="num_drones" value="$(arg num_drones)" />
+            <param name="vehicle_ns" value="typhoon_h480_2" />
+        </node>
+        
+        <node name="waypoint_flight" pkg="yolov11_ros" type="waypoint_flight.py" output="screen">
+            <param name="drone_id" value="2" />
+            <param name="num_drones" value="$(arg num_drones)" />
+            <param name="vehicle_ns" value="typhoon_h480_2" />
+            <param name="waypoint_file" value="$(arg waypoint_dir)/waypoints_drone_2.json" />
+        </node>
+        
+        <node name="human_tracker" pkg="yolov11_ros" type="human_tracker.py" output="screen">
+            <param name="drone_id" value="2" />
+            <param name="num_drones" value="$(arg num_drones)" />
+            <param name="vehicle_ns" value="typhoon_h480_2" />
+        </node>
+        
+        <node name="obstacle_avoidance" pkg="yolov11_ros" type="obstacle_avoidance.py" output="screen">
+            <param name="drone_id" value="2" />
+            <param name="num_drones" value="$(arg num_drones)" />
+            <param name="vehicle_ns" value="typhoon_h480_2" />
+        </node>
+    </group>
+    -->
+    
+    <!-- 类似地为无人机3-5添加节点组 -->
+    
+    <!-- ============= 系统说明 ============= -->
+    <!-- 
+    启动后将看到多个窗口:
+    1. YOLOv11 Detection - Drone 0 - 显示第一架无人机的检测结果
+    2. YOLOv11 Detection - Drone 1 - 显示第二架无人机的检测结果
+    3. RoboCup Score Visualization - 记分系统界面，显示6个目标的追踪状态
+    4. 终端日志 - 显示系统运行状态
+    
+    主要特性：
+    - ✅ 独立云台控制节点（支持PX4 1.13多机UDP端口）
+    - ✅ 独立YOLO检测窗口（每架无人机独立识别）
+    - ✅ 分布式协调器（防重复追踪）
+    - ✅ 智能避障系统（基于声纳）
+    - ✅ 完整记分系统（实时计分+可视化）
+    
+    云台控制机制（PX4 1.13兼容）：
+    - gimbal_control.py接收参数: "vehicle_type vehicle_id"
+    - 内部组合为: typhoon_h480_0, typhoon_h480_1
+    - 对应Gazebo模型: typhoon_h480_0（端口13030）, typhoon_h480_1（端口13031）
+    - 发布话题: /typhoon_h480_X/mavros/mount_control/command
+    
+    监控命令:
+    - rostopic echo /score                         # 当前得分
+    - rostopic echo /time_usage                    # 已用时间
+    - rostopic echo /left_actors                   # 剩余目标
+    - rostopic echo /drone_0/coordinator_status    # 协调器状态
+    - rostopic echo /drone_1/coordinator_status    # 协调器状态
+    - rostopic list | grep gimbal                  # 查看云台控制话题
+    - rostopic list | grep yolov11                 # 查看YOLO检测话题
+    - rostopic hz /typhoon_h480_0/mavros/mount_control/command  # 验证云台控制频率(~30Hz)
+    - rostopic hz /typhoon_h480_1/mavros/mount_control/command  # 验证云台控制频率(~30Hz)
+    -->
+    
+</launch>

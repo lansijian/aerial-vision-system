@@ -1,0 +1,269 @@
+# RoboCup 2025 Project .gitignore
+# =====================================
+
+# ====================
+# ROS
+# ====================
+catkin_ws/build/
+catkin_ws/devel/
+catkin_ws/install/
+catkin_ws/logs/
+catkin_ws/.catkin_tools/
+catkin_ws/.catkin_workspace
+
+# ROS generated files
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.o
+*.cmake
+*.a
+*.launch~
+*.bag
+
+# ====================
+# Python
+# ====================
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+*.mo
+*.pot
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints/
+
+# ====================
+# PyTorch / ML
+# ====================
+# 保留训练好的模型，但忽略训练中间文件
+runs/detect/train*/
+runs/detect/val*/
+runs/detect/exp*/
+!runs/detect/**/weights/best.pt
+!runs/detect/**/weights/last.pt
+
+# YOLO缓存
+*.cache
+.ultralytics/
+
+# TensorBoard日志
+events.out.tfevents.*
+
+# 大型数据集（按需调整）
+# Mydataset/data/images/
+# Mydataset/data/labels/
+
+# ====================
+# PX4 / Gazebo
+# ====================
+PX4_Firmware/build/
+PX4_Firmware/.built/
+PX4_Firmware/platforms/*/work/
+PX4_Firmware/platforms/*/download/
+
+# Gazebo模型缓存
+.gazebo/
+gazebo_models/
+
+# PX4日志
+PX4_Firmware/build/*/tmp/
+*.ulg
+*.px4log
+
+# ====================
+# C/C++
+# ====================
+*.d
+*.dSYM/
+*.su
+*.idb
+*.pdb
+*.ilk
+*.obj
+*.exe
+*.out
+*.app
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+CTestTestfile.cmake
+_deps
+
+# ====================
+# IDE
+# ====================
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.project
+.cproject
+.pydevproject
+.settings/
+
+# Sublime
+*.sublime-project
+*.sublime-workspace
+
+# ====================
+# System
+# ====================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ====================
+# Logs
+# ====================
+*.log
+log/
+logs/
+*.log.*
+
+# ROS logs
+~/.ros/log/
+
+# ====================
+# Temporary files
+# ====================
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.*.swp
+.*.swo
+
+# ====================
+# Archive files (保留版本归档)
+# ====================
+# 如果归档文件太大，可以取消注释
+# catkin_ws/src/yolov11_ros/archive_*/
+# *.zip
+# *.tar.gz
+# *.rar
+
+# ====================
+# Documentation builds
+# ====================
+docs/_build/
+docs/_static/
+docs/_templates/
+site/
+
+# ====================
+# 特定于项目的忽略
+# ====================
+
+# YOLO模型权重（根据需要调整）
+# 如果模型太大，可以忽略并使用Git LFS
+# catkin_ws/src/yolov11_ros/weights/*.pt
+# 但保留配置文件
+!catkin_ws/src/yolov11_ros/weights/.gitkeep
+
+# 训练数据（如果太大）
+# yolo11n_auto_annotated/
+# Mydataset/original_dataset/
+
+# 测试生成的文件
+test_output/
+debug_images/
+*.png
+*.jpg
+*.jpeg
+!docs/images/*.png
+!docs/images/*.jpg
+
+# ====================
+# 依赖管理
+# ====================
+# 如果使用了特定的依赖管理工具
+node_modules/
+package-lock.json
+yarn.lock
+
+# ====================
+# 其他
+# ====================
+# 临时数据
+data/tmp/
+tmp/
+
+# 编译生成的消息
+catkin_ws/src/yolov11_ros_msgs/msg_gen/
+catkin_ws/src/yolov11_ros_msgs/srv_gen/
+
+# 用户特定配置
+local_config.yaml
+*.local
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+
+# 压缩文件
+# *.tar.gz
+# *.zip
+
+# 保持空目录
+!.gitkeep
+
+# ====================
+# Git LFS (如果使用)
+# ====================
+# 大文件使用Git LFS管理
+# *.pt filter=lfs diff=lfs merge=lfs -text
+# *.pth filter=lfs diff=lfs merge=lfs -text
+# *.onnx filter=lfs diff=lfs merge=lfs -text
+# *.h5 filter=lfs diff=lfs merge=lfs -text

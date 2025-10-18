@@ -1,0 +1,25 @@
+2025.10.15
+比赛环境说明
+1.gazebo环境需要在比赛主机的docker上启动。各队把带有自己算法docker拷贝到主机即可。
+2.在拷贝docker后使用以下命令进行载入
+docker load -i package.tar
+3.从镜像中启动容器
+docker run -it \
+  --name container_name \
+  --gpus all \
+  --env="DISPLAY" \
+  --env="QT_X11_NO_MITSHM=1" \
+  --env="NVIDIA_DRIVER_CAPABILITIES=all" \
+  --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+  --volume="$HOME/.Xauthority:/root/.Xauthority:rw" \
+  --network=host \
+  images_name:tag
+4.在创建的容器中启动算法，各队在自己的算法中无需启动gazebo
+ 
+ 
+ 
+ ----------------------------------------------------------
+ 说明
+ 1.启动世界的launch文件中需要把world文件重命名为robocup.world,我们地图随机生成的脚本会在十几张地图中选择一张然后将其内容复制到PX4的world文件夹下的robocup.world文件，请大家提前改好使用的世界名字以免浪费时间
+ <arg name="world" default="$(find mavlink_sitl_gazebo)/worlds/robocup.world"/>
+ 

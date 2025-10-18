@@ -1,0 +1,25 @@
+<annotation>
+	<folder>png</folder>
+	<filename>E:\robocup2025\Mydataset\original_dataset\9.png</filename>
+	<source>
+		<database>hulan</database>
+	</source>
+	<size>
+		<width>711</width>
+		<height>717</height>
+		<depth>3</depth>
+	</size>
+		<segmented>0</segmented>
+	<object>
+		<name>human</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>312.94680851063833</xmin>
+			<ymin>372.32978723404256</ymin>
+			<xmax>378.3723404255319</xmax>
+			<ymax>495.73404255319144</ymax>
+		</bndbox>
+	</object>
+</annotation>

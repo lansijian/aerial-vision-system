@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<launch>
+
+  <!-- 无人机街道巡航完整系统启动文件 -->
+  <!-- 启动自动飞行控制脚本 -->
+  
+  <!-- 1. 启动自动飞行控制脚本 -->
+  <node pkg="yolov11_ros" name="street_cruise_node" type="autonomous_street_cruise.py" output="screen" >
+    <!-- 车辆类型和ID设置 -->
+    <param name="vehicle_type" value="typhoon_h480" />
+    <param name="vehicle_id" value="0" />
+    
+    <!-- 图像话题配置，与相机视图保持一致 -->
+    <param name="image_topic" value="/typhoon_h480_0/cgo3_camera/image_raw" />
+    
+    <!-- 控制参数 -->
+    <param name="forward_velocity" value="1.2" />
+    <param name="k_lat" value="1.2" />
+    <param name="k_head" value="0.8" />
+    
+    <!-- 视觉参数 - 优化黑色道路检测 -->
+    <param name="enable_viz" value="false" />
+    <param name="canny_low" value="50" />
+    <param name="canny_high" value="150" />
+    <param name="hough_thresh" value="40" />
+    <param name="black_thresh" value="40" />
+    <param name="bottom_roi_ratio" value="0.7" />
+    <param name="intersection_area_thresh" value="0.01" />
+    <param name="road_presence_thresh" value="0.005" />
+    
+    <!-- GPS道路方向检测参数 -->
+    <param name="use_gps_road_direction" value="true" />
+    <param name="gps_road_direction_threshold" value="0.8" />
+    <param name="gps_heading_gain" value="0.5" />
+    
+    <!-- 起飞参数 -->
+    <param name="takeoff_altitude" value="5.0" />
+  </node>
+
+  <!-- 3. 可选：启动YOLOv11目标检测（如果需要） -->
+  <!-- 取消注释下面这行来启用YOLO目标检测 -->
+  <!-- <include file="$(find yolov11_ros)/launch/yolo_v11.launch" /> -->
+  
+  <!-- 4. 启动图像显示界面 -->
+  <node pkg="rqt_image_view" name="street_cruise_view" type="rqt_image_view" >
+    <remap from="image" to="/street_cruise_node/debug_image" />
+    <param name="window_name" value="Street Cruise View" />
+  </node>
+  
+</launch>

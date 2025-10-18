@@ -1,0 +1,7 @@
+# YOLO11n自动标注的人物颜色检测数据集
+path: C:\Users\lcx\PycharmProjects\PythonProject7\yolo11n_auto_annotated
+train: images/train
+val: images/val
+
+nc: 5
+names: ['green', 'white', 'brown', 'blue', 'red']

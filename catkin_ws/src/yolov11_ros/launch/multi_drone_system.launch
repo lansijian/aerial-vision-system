@@ -1,0 +1,572 @@
+<?xml version="1.0"?>
+<!--
+  Multi-Drone Cooperative System v10.3.0-coordinator
+  6机协同巡检与追踪系统（带目标分配协调器）
+  东华大学 Astraeus队
+  
+  系统特性：
+  - 支持2-6架无人机动态配置
+  - 航点飞行使用位置控制（修复速度控制导致的反向问题）
+  - 三模块清晰架构：drone_controller + waypoint_navigator + human_tracker
+  - 追踪算法增强：紧急后退 + 高度限制
+  - 记分系统符合官方标准
+  - ✨ 新增：目标分配协调器，避免多机重复追踪（红色除外）
+-->
+
+<launch>
+  <!-- ============================================= -->
+  <!-- 系统参数（可配置） -->
+  <!-- ============================================= -->
+  <arg name="num_drones" default="6" doc="无人机数量（2-6）"/>
+  <arg name="vehicle_type" default="typhoon_h480" />
+  <arg name="enable_score_system" default="false" doc="是否启用记分系统（比赛时设置为true）"/>
+  <arg name="enable_gimbal_control" default="true" />
+  <arg name="enable_yolo_detection" default="true" />
+  <arg name="enable_yolo_visualization" default="false" doc="是否显示YOLO检测可视化窗口"/>
+  
+  <!-- YOLO检测权重文件 -->
+  <arg name="yolo_weights" default="$(find yolov11_ros)/weights/best.pt" />
+  
+  <!-- 全局参数：Gazebo actor真实高度 -->
+  <param name="/actor_height" value="1.78" type="double" />
+  
+  <!-- ============================================= -->
+  <!-- 全局节点（所有无人机共享） -->
+  <!-- ============================================= -->
+  
+  <!-- 简化版目标分配协调器（避免重复追踪） -->
+  <node pkg="yolov11_ros" type="simple_coordinator.py" name="simple_coordinator" output="screen">
+    <env name="PATH" value="/usr/local/bin:$(env PATH)" />
+    <env name="PYTHONPATH" value="/usr/local/lib/python3.8/dist-packages:$(env PYTHONPATH)" />
+    <env name="CONDA_DEFAULT_ENV" value="yolov11" />
+    <param name="num_drones" value="$(arg num_drones)" />
+  </node>
+  
+  <!-- YOLO检测节点（动态生成，支持1-6架） -->
+  <group if="$(arg enable_yolo_detection)">
+    <!-- 无人机0的YOLO检测 -->
+    <node name="yolo_v11_drone0" pkg="yolov11_ros" type="yolo_v11.py" output="screen">
+        <env name="PATH" value="/usr/local/bin:$(env PATH)" />
+        <env name="PYTHONPATH" value="/usr/local/lib/python3.8/dist-packages:$(env PYTHONPATH)" />
+        <env name="CONDA_DEFAULT_ENV" value="yolov11" />
+        <param name="weight_path" value="$(arg yolo_weights)" />
+        <param name="image_topic" value="/typhoon_h480_0/cgo3_camera/image_raw" />
+        <param name="pub_topic" value="/yolo_detector/drone_0/detections" />
+        <param name="camera_frame" value="cgo3_camera_optical_frame" />
+        <param name="conf" value="0.3" />
+        <param name="visualize" value="$(arg enable_yolo_visualization)" />
+        <param name="window_name" value="YOLOv11 Detection - Drone 0" />
+    </node>
+    
+    <!-- 无人机1的YOLO检测（如果启用） -->
+    <node if="$(eval arg('num_drones') >= 2)" name="yolo_v11_drone1" pkg="yolov11_ros" type="yolo_v11.py" output="screen">
+        <env name="PATH" value="/usr/local/bin:$(env PATH)" />
+        <env name="PYTHONPATH" value="/usr/local/lib/python3.8/dist-packages:$(env PYTHONPATH)" />
+        <env name="CONDA_DEFAULT_ENV" value="yolov11" />
+        <param name="weight_path" value="$(arg yolo_weights)" />
+        <param name="image_topic" value="/typhoon_h480_1/cgo3_camera/image_raw" />
+        <param name="pub_topic" value="/yolo_detector/drone_1/detections" />
+        <param name="camera_frame" value="cgo3_camera_optical_frame" />
+        <param name="conf" value="0.3" />
+        <param name="visualize" value="$(arg enable_yolo_visualization)" />
+        <param name="window_name" value="YOLOv11 Detection - Drone 1" />
+    </node>
+    
+    <!-- 无人机2的YOLO检测 -->
+    <node if="$(eval arg('num_drones') >= 3)" name="yolo_v11_drone2" pkg="yolov11_ros" type="yolo_v11.py" output="screen">
+        <env name="PATH" value="/usr/local/bin:$(env PATH)" />
+        <env name="PYTHONPATH" value="/usr/local/lib/python3.8/dist-packages:$(env PYTHONPATH)" />
+        <env name="CONDA_DEFAULT_ENV" value="yolov11" />
+        <param name="weight_path" value="$(arg yolo_weights)" />
+        <param name="image_topic" value="/typhoon_h480_2/cgo3_camera/image_raw" />
+        <param name="pub_topic" value="/yolo_detector/drone_2/detections" />
+        <param name="camera_frame" value="cgo3_camera_optical_frame" />
+        <param name="conf" value="0.3" />
+        <param name="visualize" value="$(arg enable_yolo_visualization)" />
+        <param name="window_name" value="YOLOv11 Detection - Drone 2" />
+    </node>
+    
+    <!-- 无人机3的YOLO检测 -->
+    <node if="$(eval arg('num_drones') >= 4)" name="yolo_v11_drone3" pkg="yolov11_ros" type="yolo_v11.py" output="screen">
+        <env name="PATH" value="/usr/local/bin:$(env PATH)" />
+        <env name="PYTHONPATH" value="/usr/local/lib/python3.8/dist-packages:$(env PYTHONPATH)" />
+        <env name="CONDA_DEFAULT_ENV" value="yolov11" />
+        <param name="weight_path" value="$(arg yolo_weights)" />
+        <param name="image_topic" value="/typhoon_h480_3/cgo3_camera/image_raw" />
+        <param name="pub_topic" value="/yolo_detector/drone_3/detections" />
+        <param name="camera_frame" value="cgo3_camera_optical_frame" />
+        <param name="conf" value="0.3" />
+        <param name="visualize" value="$(arg enable_yolo_visualization)" />
+        <param name="window_name" value="YOLOv11 Detection - Drone 3" />
+    </node>
+    
+    <!-- 无人机4的YOLO检测 -->
+    <node if="$(eval arg('num_drones') >= 5)" name="yolo_v11_drone4" pkg="yolov11_ros" type="yolo_v11.py" output="screen">
+        <env name="PATH" value="/usr/local/bin:$(env PATH)" />
+        <env name="PYTHONPATH" value="/usr/local/lib/python3.8/dist-packages:$(env PYTHONPATH)" />
+        <env name="CONDA_DEFAULT_ENV" value="yolov11" />
+        <param name="weight_path" value="$(arg yolo_weights)" />
+        <param name="image_topic" value="/typhoon_h480_4/cgo3_camera/image_raw" />
+        <param name="pub_topic" value="/yolo_detector/drone_4/detections" />
+        <param name="camera_frame" value="cgo3_camera_optical_frame" />
+        <param name="conf" value="0.3" />
+        <param name="visualize" value="$(arg enable_yolo_visualization)" />
+        <param name="window_name" value="YOLOv11 Detection - Drone 4" />
+    </node>
+    
+    <!-- 无人机5的YOLO检测 -->
+    <node if="$(eval arg('num_drones') >= 6)" name="yolo_v11_drone5" pkg="yolov11_ros" type="yolo_v11.py" output="screen">
+        <env name="PATH" value="/usr/local/bin:$(env PATH)" />
+        <env name="PYTHONPATH" value="/usr/local/lib/python3.8/dist-packages:$(env PYTHONPATH)" />
+        <env name="CONDA_DEFAULT_ENV" value="yolov11" />
+        <param name="weight_path" value="$(arg yolo_weights)" />
+        <param name="image_topic" value="/typhoon_h480_5/cgo3_camera/image_raw" />
+        <param name="pub_topic" value="/yolo_detector/drone_5/detections" />
+        <param name="camera_frame" value="cgo3_camera_optical_frame" />
+        <param name="conf" value="0.3" />
+        <param name="visualize" value="$(arg enable_yolo_visualization)" />
+        <param name="window_name" value="YOLOv11 Detection - Drone 5" />
+    </node>
+  </group>
+  
+  <!-- 记分系统（官方标准） -->
+  <group if="$(arg enable_score_system)">
+    <node pkg="yolov11_ros" type="score_calculator.py" name="score_calculator" args="typhoon_h480" output="screen" respawn="false">
+      <env name="PATH" value="/usr/local/bin:$(env PATH)" />
+      <env name="PYTHONPATH" value="/usr/local/lib/python3.8/dist-packages:$(env PYTHONPATH)" />
+      <env name="CONDA_DEFAULT_ENV" value="yolov11" />
+      <param name="num_drones" value="$(arg num_drones)" />
+    </node>
+  </group>
+  
+  <!-- ============================================= -->
+  <!-- 无人机配置（v10.1.2三模块架构） -->
+  <!-- ============================================= -->
+  
+  <!-- 无人机0 -->
+  <group ns="drone_0">
+    <!-- 主控制器 -->
+    <node pkg="yolov11_ros" type="drone_controller.py" name="drone_controller" output="screen" respawn="true">
+      <param name="drone_id" value="0" />
+      <param name="vehicle_type" value="$(arg vehicle_type)" />
+      <param name="takeoff_altitude" value="3.0" />
+      <param name="initial_delay" value="1.0" />
+      <param name="waypoint_file" value="waypoints/waypoints_drone_0.json" />
+    </node>
+    
+    <!-- 航点导航器（位置控制） -->
+    <node pkg="yolov11_ros" type="waypoint_navigator.py" name="waypoint_navigator" output="screen">
+      <param name="drone_id" value="0" />
+      <param name="vehicle_type" value="$(arg vehicle_type)" />
+      <param name="waypoint_reached_threshold" value="0.5" />
+    </node>
+    
+    <!-- 人体追踪器（优化版 - 100Hz控制）-->
+    <node pkg="yolov11_ros" type="human_tracker.py" name="human_tracker" output="screen">
+      <param name="drone_id" value="0" />
+      <param name="vehicle_type" value="$(arg vehicle_type)" />
+      <param name="detection_topic" value="/yolo_detector/drone_0/detections" />
+      
+      <!-- 基础参数 -->
+      <param name="ideal_tracking_distance" value="3.0" />
+      <param name="target_height" value="0.9" />
+      <param name="assumed_human_height" value="1.7" />
+      
+      <!-- 云台参数 -->
+      <param name="gimbal_pitch" value="-50.0" />
+      <param name="gimbal_yaw" value="0.0" />
+      <param name="gimbal_roll" value="0.0" />
+      
+      <!-- 坐标系偏移补偿（官方起飞位置：-17, -3） -->
+      <param name="spawn_offset_x" value="-17.0" />
+      <param name="spawn_offset_y" value="-3.0" />
+      
+      <!-- ========== 追踪优化参数（方便现场调） ========== -->
+      <!-- Kalman滤波 -->
+      <param name="use_kalman" value="true" />
+      <param name="control_frequency" value="100.0" />
+      
+      <!-- 自适应偏航控制 -->
+      <param name="Kp_yaw_base" value="80.0" />
+      <param name="Ki_yaw" value="0.001" />
+      <param name="Kp_lateral" value="0.002" />
+      
+      <!-- 前后距离控制（框高法） -->
+      <param name="ideal_box_height" value="160" />
+      <param name="Kp_distance" value="2.0" />
+      
+      <!-- 高度控制（增强保持力度） -->
+      <param name="Kp_z" value="2.0" />
+      
+      <!-- 速度饱和限制 -->
+      <param name="max_vx" value="4.0" />
+      <param name="max_vy" value="1.0" />
+      <param name="max_vz" value="1.0" />
+      <param name="max_yaw_rate" value="0.5" />
+    </node>
+    
+    <!-- 云台控制 -->
+    <group if="$(arg enable_gimbal_control)">
+      <node name="gimbal_control_typhoon_h480_0" pkg="yolov11_ros" type="gimbal_controller.py" args="typhoon_h480 0" output="screen" />
+    </group>
+  </group>
+  
+  <!-- 无人机1（如果启用） -->
+  <group if="$(eval arg('num_drones') >= 2)" ns="drone_1">
+    <!-- 主控制器 -->
+    <node pkg="yolov11_ros" type="drone_controller.py" name="drone_controller" output="screen" respawn="true">
+      <param name="drone_id" value="1" />
+      <param name="vehicle_type" value="$(arg vehicle_type)" />
+      <param name="takeoff_altitude" value="3.0" />
+      <param name="initial_delay" value="1.0" />
+      <param name="waypoint_file" value="waypoints/waypoints_drone_1.json" />
+    </node>
+    
+    <!-- 航点导航器（位置控制） -->
+    <node pkg="yolov11_ros" type="waypoint_navigator.py" name="waypoint_navigator" output="screen">
+      <param name="drone_id" value="1" />
+      <param name="vehicle_type" value="$(arg vehicle_type)" />
+      <param name="waypoint_reached_threshold" value="0.5" />
+    </node>
+    
+    <!-- 人体追踪器（优化版 - 100Hz控制）-->
+    <node pkg="yolov11_ros" type="human_tracker.py" name="human_tracker" output="screen">
+      <param name="drone_id" value="1" />
+      <param name="vehicle_type" value="$(arg vehicle_type)" />
+      <param name="detection_topic" value="/yolo_detector/drone_1/detections" />
+      
+      <!-- 基础参数 -->
+      <param name="ideal_tracking_distance" value="3.0" />
+      <param name="target_height" value="0.9" />
+      <param name="assumed_human_height" value="1.7" />
+      
+      <!-- 云台参数 -->
+      <param name="gimbal_pitch" value="-50.0" />
+      <param name="gimbal_yaw" value="0.0" />
+      <param name="gimbal_roll" value="0.0" />
+      
+      <!-- 坐标系偏移补偿（官方起飞位置：-14, -3） -->
+      <param name="spawn_offset_x" value="-14.0" />
+      <param name="spawn_offset_y" value="-3.0" />
+      
+      <!-- ========== 追踪优化参数（方便现场调） ========== -->
+      <!-- Kalman滤波 -->
+      <param name="use_kalman" value="true" />
+      <param name="control_frequency" value="100.0" />
+      
+      <!-- 自适应偏航控制 -->
+      <param name="Kp_yaw_base" value="80.0" />
+      <param name="Ki_yaw" value="0.001" />
+      <param name="Kp_lateral" value="0.002" />
+      
+      <!-- 前后距离控制（框高法） -->
+      <param name="ideal_box_height" value="160" />
+      <param name="Kp_distance" value="2.0" />
+      
+      <!-- 高度控制（增强保持力度） -->
+      <param name="Kp_z" value="2.0" />
+      
+      <!-- 速度饱和限制 -->
+      <param name="max_vx" value="4.0" />
+      <param name="max_vy" value="1.0" />
+      <param name="max_vz" value="1.0" />
+      <param name="max_yaw_rate" value="0.5" />
+    </node>
+    
+    <!-- 云台控制 -->
+    <group if="$(arg enable_gimbal_control)">
+      <node name="gimbal_control_typhoon_h480_1" pkg="yolov11_ros" type="gimbal_controller.py" args="typhoon_h480 1" output="screen" />
+    </group>
+  </group>
+  
+  <!-- 无人机2 -->
+  <group if="$(eval arg('num_drones') >= 3)" ns="drone_2">
+    <!-- 主控制器 -->
+    <node pkg="yolov11_ros" type="drone_controller.py" name="drone_controller" output="screen" respawn="true">
+      <param name="drone_id" value="2" />
+      <param name="vehicle_type" value="$(arg vehicle_type)" />
+      <param name="takeoff_altitude" value="3.0" />
+      <param name="initial_delay" value="1.0" />
+      <param name="waypoint_file" value="waypoints/waypoints_drone_2.json" />
+    </node>
+    
+    <!-- 航点导航器（位置控制） -->
+    <node pkg="yolov11_ros" type="waypoint_navigator.py" name="waypoint_navigator" output="screen">
+      <param name="drone_id" value="2" />
+      <param name="vehicle_type" value="$(arg vehicle_type)" />
+      <param name="waypoint_reached_threshold" value="0.5" />
+    </node>
+    
+    <!-- 人体追踪器（优化版 - 100Hz控制）-->
+    <node pkg="yolov11_ros" type="human_tracker.py" name="human_tracker" output="screen">
+      <param name="drone_id" value="2" />
+      <param name="vehicle_type" value="$(arg vehicle_type)" />
+      <param name="detection_topic" value="/yolo_detector/drone_2/detections" />
+      
+      <!-- 基础参数 -->
+      <param name="ideal_tracking_distance" value="3.0" />
+      <param name="target_height" value="0.9" />
+      <param name="assumed_human_height" value="1.7" />
+      
+      <!-- 云台参数 -->
+      <param name="gimbal_pitch" value="-50.0" />
+      <param name="gimbal_yaw" value="0.0" />
+      <param name="gimbal_roll" value="0.0" />
+      
+      <!-- 坐标系偏移补偿（官方起飞位置：-17, 0） -->
+      <param name="spawn_offset_x" value="-17.0" />
+      <param name="spawn_offset_y" value="0.0" />
+      
+      <!-- ========== 追踪优化参数（方便现场调） ========== -->
+      <!-- Kalman滤波 -->
+      <param name="use_kalman" value="true" />
+      <param name="control_frequency" value="100.0" />
+      
+      <!-- 自适应偏航控制 -->
+      <param name="Kp_yaw_base" value="80.0" />
+      <param name="Ki_yaw" value="0.001" />
+      <param name="Kp_lateral" value="0.002" />
+      
+      <!-- 前后距离控制（框高法） -->
+      <param name="ideal_box_height" value="160" />
+      <param name="Kp_distance" value="2.0" />
+      
+      <!-- 高度控制（增强保持力度） -->
+      <param name="Kp_z" value="2.0" />
+      
+      <!-- 速度饱和限制 -->
+      <param name="max_vx" value="4.0" />
+      <param name="max_vy" value="1.0" />
+      <param name="max_vz" value="1.0" />
+      <param name="max_yaw_rate" value="0.5" />
+    </node>
+    
+    <!-- 云台控制 -->
+    <group if="$(arg enable_gimbal_control)">
+      <node name="gimbal_control_typhoon_h480_2" pkg="yolov11_ros" type="gimbal_controller.py" args="typhoon_h480 2" output="screen" />
+    </group>
+  </group>
+  
+  <!-- 无人机3 -->
+  <group if="$(eval arg('num_drones') >= 4)" ns="drone_3">
+    <node pkg="yolov11_ros" type="drone_controller.py" name="drone_controller" output="screen" respawn="true">
+      <param name="drone_id" value="3" />
+      <param name="vehicle_type" value="$(arg vehicle_type)" />
+      <param name="takeoff_altitude" value="3.0" />
+      <param name="initial_delay" value="1.0" />
+      <param name="waypoint_file" value="waypoints/waypoints_drone_3.json" />
+    </node>
+    <node pkg="yolov11_ros" type="waypoint_navigator.py" name="waypoint_navigator" output="screen">
+      <param name="drone_id" value="3" />
+      <param name="vehicle_type" value="$(arg vehicle_type)" />
+      <param name="waypoint_reached_threshold" value="0.5" />
+    </node>
+    <!-- 人体追踪器（优化版 - 100Hz控制）-->
+    <node pkg="yolov11_ros" type="human_tracker.py" name="human_tracker" output="screen">
+      <param name="drone_id" value="3" />
+      <param name="vehicle_type" value="$(arg vehicle_type)" />
+      <param name="detection_topic" value="/yolo_detector/drone_3/detections" />
+      
+      <!-- 基础参数 -->
+      <param name="ideal_tracking_distance" value="3.0" />
+      <param name="target_height" value="0.9" />
+      <param name="assumed_human_height" value="1.7" />
+      
+      <!-- 云台参数 -->
+      <param name="gimbal_pitch" value="-50.0" />
+      <param name="gimbal_yaw" value="0.0" />
+      <param name="gimbal_roll" value="0.0" />
+      
+      <!-- 坐标系偏移补偿（官方起飞位置：-14, 0） -->
+      <param name="spawn_offset_x" value="-14.0" />
+      <param name="spawn_offset_y" value="0.0" />
+      
+      <!-- ========== 追踪优化参数（方便现场调） ========== -->
+      <!-- Kalman滤波 -->
+      <param name="use_kalman" value="true" />
+      <param name="control_frequency" value="100.0" />
+      
+      <!-- 自适应偏航控制 -->
+      <param name="Kp_yaw_base" value="80.0" />
+      <param name="Ki_yaw" value="0.001" />
+      <param name="Kp_lateral" value="0.002" />
+      
+      <!-- 前后距离控制（框高法） -->
+      <param name="ideal_box_height" value="160" />
+      <param name="Kp_distance" value="2.0" />
+      
+      <!-- 高度控制（增强保持力度） -->
+      <param name="Kp_z" value="2.0" />
+      
+      <!-- 速度饱和限制 -->
+      <param name="max_vx" value="4.0" />
+      <param name="max_vy" value="1.0" />
+      <param name="max_vz" value="1.0" />
+      <param name="max_yaw_rate" value="0.5" />
+    </node>
+    
+    <!-- 云台控制 -->
+    <group if="$(arg enable_gimbal_control)">
+      <node name="gimbal_control_typhoon_h480_3" pkg="yolov11_ros" type="gimbal_controller.py" args="typhoon_h480 3" output="screen" />
+    </group>
+  </group>
+  
+  <!-- 无人机4 -->
+  <group if="$(eval arg('num_drones') >= 5)" ns="drone_4">
+    <node pkg="yolov11_ros" type="drone_controller.py" name="drone_controller" output="screen" respawn="true">
+      <param name="drone_id" value="4" />
+      <param name="vehicle_type" value="$(arg vehicle_type)" />
+      <param name="takeoff_altitude" value="3.0" />
+      <param name="initial_delay" value="1.0" />
+      <param name="waypoint_file" value="waypoints/waypoints_drone_4.json" />
+    </node>
+    <node pkg="yolov11_ros" type="waypoint_navigator.py" name="waypoint_navigator" output="screen">
+      <param name="drone_id" value="4" />
+      <param name="vehicle_type" value="$(arg vehicle_type)" />
+      <param name="waypoint_reached_threshold" value="0.5" />
+    </node>
+    <!-- 人体追踪器（优化版 - 100Hz控制）-->
+    <node pkg="yolov11_ros" type="human_tracker.py" name="human_tracker" output="screen">
+      <param name="drone_id" value="4" />
+      <param name="vehicle_type" value="$(arg vehicle_type)" />
+      <param name="detection_topic" value="/yolo_detector/drone_4/detections" />
+      
+      <!-- 基础参数 -->
+      <param name="ideal_tracking_distance" value="3.0" />
+      <param name="target_height" value="0.9" />
+      <param name="assumed_human_height" value="1.7" />
+      
+      <!-- 云台参数 -->
+      <param name="gimbal_pitch" value="-50.0" />
+      <param name="gimbal_yaw" value="0.0" />
+      <param name="gimbal_roll" value="0.0" />
+      
+      <!-- 坐标系偏移补偿（官方起飞位置：-17, 3） -->
+      <param name="spawn_offset_x" value="-17.0" />
+      <param name="spawn_offset_y" value="3.0" />
+      
+      <!-- ========== 追踪优化参数（方便现场调） ========== -->
+      <!-- Kalman滤波 -->
+      <param name="use_kalman" value="true" />
+      <param name="control_frequency" value="100.0" />
+      
+      <!-- 自适应偏航控制 -->
+      <param name="Kp_yaw_base" value="80.0" />
+      <param name="Ki_yaw" value="0.001" />
+      <param name="Kp_lateral" value="0.002" />
+      
+      <!-- 前后距离控制（框高法） -->
+      <param name="ideal_box_height" value="160" />
+      <param name="Kp_distance" value="2.0" />
+      
+      <!-- 高度控制（增强保持力度） -->
+      <param name="Kp_z" value="2.0" />
+      
+      <!-- 速度饱和限制 -->
+      <param name="max_vx" value="4.0" />
+      <param name="max_vy" value="1.0" />
+      <param name="max_vz" value="1.0" />
+      <param name="max_yaw_rate" value="0.5" />
+    </node>
+    
+    <!-- 云台控制 -->
+    <group if="$(arg enable_gimbal_control)">
+      <node name="gimbal_control_typhoon_h480_4" pkg="yolov11_ros" type="gimbal_controller.py" args="typhoon_h480 4" output="screen" />
+    </group>
+  </group>
+  
+  <!-- 无人机5 -->
+  <group if="$(eval arg('num_drones') >= 6)" ns="drone_5">
+    <node pkg="yolov11_ros" type="drone_controller.py" name="drone_controller" output="screen" respawn="true">
+      <param name="drone_id" value="5" />
+      <param name="vehicle_type" value="$(arg vehicle_type)" />
+      <param name="takeoff_altitude" value="3.0" />
+      <param name="initial_delay" value="1.0" />
+      <param name="waypoint_file" value="waypoints/waypoints_drone_5.json" />
+    </node>
+    <node pkg="yolov11_ros" type="waypoint_navigator.py" name="waypoint_navigator" output="screen">
+      <param name="drone_id" value="5" />
+      <param name="vehicle_type" value="$(arg vehicle_type)" />
+      <param name="waypoint_reached_threshold" value="0.5" />
+    </node>
+    <!-- 人体追踪器（优化版 - 100Hz控制）-->
+    <node pkg="yolov11_ros" type="human_tracker.py" name="human_tracker" output="screen">
+      <param name="drone_id" value="5" />
+      <param name="vehicle_type" value="$(arg vehicle_type)" />
+      <param name="detection_topic" value="/yolo_detector/drone_5/detections" />
+      
+      <!-- 基础参数 -->
+      <param name="ideal_tracking_distance" value="3.0" />
+      <param name="target_height" value="0.9" />
+      <param name="assumed_human_height" value="1.7" />
+      
+      <!-- 云台参数 -->
+      <param name="gimbal_pitch" value="-50.0" />
+      <param name="gimbal_yaw" value="0.0" />
+      <param name="gimbal_roll" value="0.0" />
+      
+      <!-- 坐标系偏移补偿（官方起飞位置：-14, 3） -->
+      <param name="spawn_offset_x" value="-14.0" />
+      <param name="spawn_offset_y" value="3.0" />
+      
+      <!-- ========== 追踪优化参数（方便现场调） ========== -->
+      <!-- Kalman滤波 -->
+      <param name="use_kalman" value="true" />
+      <param name="control_frequency" value="100.0" />
+      
+      <!-- 自适应偏航控制 -->
+      <param name="Kp_yaw_base" value="80.0" />
+      <param name="Ki_yaw" value="0.001" />
+      <param name="Kp_lateral" value="0.002" />
+      
+      <!-- 前后距离控制（框高法） -->
+      <param name="ideal_box_height" value="160" />
+      <param name="Kp_distance" value="2.0" />
+      
+      <!-- 高度控制（增强保持力度） -->
+      <param name="Kp_z" value="2.0" />
+      
+      <!-- 速度饱和限制 -->
+      <param name="max_vx" value="4.0" />
+      <param name="max_vy" value="1.0" />
+      <param name="max_vz" value="1.0" />
+      <param name="max_yaw_rate" value="0.5" />
+    </node>
+    
+    <!-- 云台控制 -->
+    <group if="$(arg enable_gimbal_control)">
+      <node name="gimbal_control_typhoon_h480_5" pkg="yolov11_ros" type="gimbal_controller.py" args="typhoon_h480 5" output="screen" />
+    </group>
+  </group>
+  
+  <!-- ============================================= -->
+  <!-- 使用说明 -->
+  <!-- ============================================= -->
+  <!--
+  启动6无人机系统（默认）：
+    roslaunch yolov11_ros multi_drone_system.launch
+  
+  启动指定数量无人机：
+    roslaunch yolov11_ros multi_drone_system.launch num_drones:=2
+  
+  架构说明：
+  1. target_coordinator.py - 目标分配协调器（避免重复追踪）
+  2. drone_controller.py - 主控制器（起飞、模式切换、命令转发）
+  3. waypoint_navigator.py - 航点导航（位置控制，修复v10.1.2反向问题）
+  4. human_tracker.py - 人体追踪（速度控制，紧急后退+高度限制+协调器通信）
+  
+  6机起飞位置（ENU坐标系）：
+  - UAV0: (-17, -3, 1)  UAV1: (-14, -3, 1)
+  - UAV2: (-17,  0, 1)  UAV3: (-14,  0, 1)
+  - UAV4: (-17,  3, 1)  UAV5: (-14,  3, 1)
+  
+  关键特性：
+  - 航点飞行使用PositionTarget（位置控制）
+  - 追踪算法支持紧急后退（v>250px时-3.0m/s）
+  - 高度限制（超过5.5m自动下降）
+  - 支持2-6架无人机动态配置
+  - ✨ 目标分配协调：一架无人机追踪某颜色后，其他无人机不再追踪（红色除外）
+  - ✨ 心跳机制：3秒无心跳自动释放锁定，防止死锁
+  -->
+  
+</launch>

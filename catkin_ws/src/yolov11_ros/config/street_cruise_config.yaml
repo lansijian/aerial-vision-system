@@ -1,0 +1,122 @@
+# YOLO街道巡航系统配置文件
+# 可以根据实际需求修改这些参数
+
+# YOLO检测参数
+yolo:
+  weight_path: "$(find yolov11_ros)/weights/best.pt"
+  conf: 0.3
+  visualize: true
+
+# 车辆配置
+vehicle:
+  type: "typhoon_h480"
+  id: "0"
+
+# 飞行控制参数
+flight_control:
+  forward_velocity: 5.0        # 街道中心前进速度 (m/s)
+  max_forward_velocity: 6.0    # 最大前进速度 (m/s)
+  lateral_velocity: 2.0        # 横向移动速度 (m/s)
+  yaw_rate_limit: 1.0          # 偏航角速度限制 (rad/s)
+  takeoff_altitude: 4.5        # 起飞高度 (m)
+  takeoff_timeout_s: 20.0      # 起飞超时时间 (s)
+  hover_yaw: 0.0               # 悬停航向角 (rad)
+
+# 街道跟踪参数
+street_tracking:
+  center_threshold: 0.1        # 街道中心偏差阈值
+  tracking_gain: 1.5           # 街道跟踪增益
+  fast_speed_factor: 1.0       # 街道中心快速飞行倍数
+  slow_speed_factor: 0.6       # 偏离中心时减速倍数
+
+# 路口处理参数
+intersection_handling:
+  stop_distance: 10.0          # 路口停止距离 (m)
+  turn_angle: 90.0             # 转向角度 (度)
+  stop_duration: 1.0           # 路口停止时间 (s)
+  turn_tolerance: 5.0          # 转向完成容差 (度)
+  
+  # 路口选择策略
+  strategy: "priority"         # priority: 优先级, random: 随机, explore: 探索
+  priority_order: [0, 1, -1]   # 优先级顺序: 0=直行, 1=左转, -1=右转
+
+# 行人跟踪参数
+human_tracking:
+  enabled: true                # 是否启用行人跟踪
+  tracking_speed: 2.0          # 行人跟踪速度 (m/s)
+  center_threshold: 0.15       # 行人居中阈值
+  tracking_timeout: 10.0       # 行人跟踪超时时间 (s)
+  distance_maintenance: true   # 是否保持距离
+
+# 检测类别配置
+detection_classes:
+  street:
+    - "road"
+    - "street"
+    - "highway"
+    - "lane"
+    
+  intersection:
+    - "intersection"
+    - "crossroad"
+    - "junction"
+    - "fork"
+    
+  human:
+    - "human"
+    - "person"
+    - "pedestrian"
+    - "people"
+
+# YOLO检测参数
+detection:
+  conf_threshold: 0.35         # 检测置信度阈值
+  nms_threshold: 0.45          # 非极大值抑制阈值
+  max_detections: 100          # 最大检测数量
+
+# 话题配置
+topics:
+  pose: "/typhoon_h480_0/mavros/local_position/pose"
+  rgb_image: "/typhoon_h480_0/cgo3_camera/image_raw"
+  gps: "/typhoon_h480_0/mavros/global_position/global"
+  bboxes: "/yolov11/BoundingBoxes"
+  debug_image: "/street_cruise_yolo/debug_image"
+  keyboard: "/street_cruise_yolo/keyboard"
+
+# 可视化参数
+visualization:
+  enable: true                 # 是否启用可视化
+  window_scale: 1.0            # 窗口缩放比例
+  show_detections: true        # 显示检测框
+  show_center_line: true       # 显示中心线
+  show_status: true            # 显示状态信息
+  font_scale: 0.6              # 字体大小
+  line_thickness: 2            # 线条粗细
+
+# 日志记录参数
+logging:
+  csv_path: "/tmp/street_cruise_yolo_log.csv"
+  log_interval_s: 1.0          # 日志记录间隔 (s)
+  enable_detailed_log: true    # 是否启用详细日志
+  log_detections: true         # 是否记录检测结果
+  log_control_commands: true   # 是否记录控制指令
+
+# 安全参数
+safety:
+  max_altitude: 10.0           # 最大飞行高度 (m)
+  min_altitude: 1.0            # 最小飞行高度 (m)
+  emergency_land_altitude: 2.0 # 紧急降落高度 (m)
+  battery_warning_level: 20.0  # 电池警告电量 (%)
+  
+# 性能参数
+performance:
+  control_rate: 30             # 控制频率 (Hz)
+  image_buffer_size: 52428800  # 图像缓冲区大小
+  detection_timeout: 5.0       # 检测超时时间 (s)
+  
+# 调试参数
+debug:
+  enable_debug_output: true    # 是否启用调试输出
+  debug_level: "INFO"          # 调试级别: DEBUG, INFO, WARN, ERROR
+  save_debug_images: false     # 是否保存调试图像
+  debug_image_path: "/tmp/debug_images/"  # 调试图像保存路径

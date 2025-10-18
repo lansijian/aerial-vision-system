@@ -1,0 +1,170 @@
+#!/home/cty/miniconda3/envs/yolov11/bin/python
+# -*- coding: utf-8 -*-
+
+import cv2
+import torch
+import rospy
+import numpy as np
+import os
+from ultralytics import YOLO
+from time import time
+
+from std_msgs.msg import Header, Bool
+from sensor_msgs.msg import Image
+from yolov11_ros_msgs.msg import BoundingBox, BoundingBoxes
+
+
+class Yolo_Dect:
+    def __init__(self):
+
+        # load parameters
+        weight_path = rospy.get_param('~weight_path', '/home/cty/catkin_ws/src/yolov11_ros/weights/best.pt')
+        image_topic = rospy.get_param(
+            '~image_topic', '/camera/color/image_raw')
+        pub_topic = rospy.get_param('~pub_topic', '/yolov11/BoundingBoxes')
+        self.camera_frame = rospy.get_param('~camera_frame', '')
+        conf = rospy.get_param('~conf', '0.8')
+        self.visualize = rospy.get_param('~visualize', 'True')
+        self.window_name = rospy.get_param('~window_name', 'YOLOv11')
+        
+        # 云台准备标志
+        self.gimbal_ready = False
+        
+        # 从image_topic中提取drone_id（例如：/typhoon_h480_0/cgo3_camera/image_raw）
+        import re
+        match = re.search(r'_(\d+)/', image_topic)
+        if match:
+            self.drone_id = int(match.group(1))
+        else:
+            self.drone_id = 0
+        
+        # 检查权重文件路径
+        if not weight_path or not os.path.exists(weight_path):
+            rospy.logerr(f"YOLO权重文件不存在: {weight_path}")
+            rospy.logerr("请确保权重文件路径正确")
+            return
+
+        # which device will be used
+        if (rospy.get_param('/use_gpu', 'false')):
+            self.device = 'cuda'
+        else:
+            self.device = 'cpu'
+
+        # 初始化YOLO模型（兼容旧版ultralytics，不使用verbose参数）
+        self.model = YOLO(weight_path)
+        
+        # 只对PyTorch模型执行fuse()，避免其他格式的错误
+        try:
+            if weight_path.endswith('.pt'):
+                self.model.fuse()
+        except Exception as e:
+            rospy.logwarn(f"模型fuse失败，继续运行: {e}")
+
+        self.model.conf = conf
+        self.color_image = Image()
+        self.getImageStatus = False
+
+        # Load class color
+        self.classes_colors = {}
+
+        # image subscribe
+        self.color_sub = rospy.Subscriber(image_topic, Image, self.image_callback,
+                                          queue_size=1, buff_size=52428800)
+
+        # 订阅云台准备信号
+        self.gimbal_ready_sub = rospy.Subscriber(
+            f'/drone_{self.drone_id}/gimbal_ready',
+            Bool, self._gimbal_ready_callback,
+            queue_size=1
+        )
+
+        # output publishers
+        self.position_pub = rospy.Publisher(
+            pub_topic,  BoundingBoxes, queue_size=1)
+
+        self.image_pub = rospy.Publisher(
+            '/yolov11/detection_image',  Image, queue_size=1)
+
+        # if no image messages
+        while (not self.getImageStatus):
+            rospy.loginfo("waiting for image.")
+            rospy.sleep(2)
+    
+    def _gimbal_ready_callback(self, msg):
+        """云台准备完成回调"""
+        if msg.data and not self.gimbal_ready:
+            self.gimbal_ready = True
+            rospy.loginfo(f"[YOLO Drone {self.drone_id}] 云台已就绪，可视化窗口已启用")
+
+    def image_callback(self, image):
+
+        self.boundingBoxes = BoundingBoxes()
+        self.boundingBoxes.header = image.header
+        self.boundingBoxes.image_header = image.header
+        self.getImageStatus = True
+        self.color_image = np.frombuffer(image.data, dtype=np.uint8).reshape(
+            image.height, image.width, -1)
+
+        self.color_image = cv2.cvtColor(self.color_image, cv2.COLOR_BGR2RGB)
+
+        # 推理时也禁用verbose输出
+        results = self.model(self.color_image, show=False, conf=0.3, verbose=False)
+
+        self.dectshow(results, image.height, image.width)
+
+        cv2.waitKey(3)
+
+    def dectshow(self, results, height, width):
+
+        self.frame = results[0].plot()
+        # 不要在终端打印推理速度
+        fps = 1000.0/ results[0].speed['inference']
+        cv2.putText(self.frame, f'FPS: {int(fps)}', (20,50), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2, cv2.LINE_AA)
+
+        for result in results[0].boxes:
+            boundingBox = BoundingBox()
+            boundingBox.xmin = np.int64(result.xyxy[0][0].item())
+            boundingBox.ymin = np.int64(result.xyxy[0][1].item())
+            boundingBox.xmax = np.int64(result.xyxy[0][2].item())
+            boundingBox.ymax = np.int64(result.xyxy[0][3].item())
+            boundingBox.Class = results[0].names[result.cls.item()]
+            boundingBox.probability = result.conf.item()
+            self.boundingBoxes.bounding_boxes.append(boundingBox)
+        self.position_pub.publish(self.boundingBoxes)
+        self.publish_image(self.frame, height, width)
+
+        # 只有在云台准备完成后才显示可视化窗口
+        if self.visualize and self.gimbal_ready:
+            # cv2.imshow('YOLOv11', self.frame)
+            new_width = width // 2
+            new_height = height // 2
+            # Resize the frame for display
+            resized_frame_for_display = cv2.resize(self.frame, (new_width, new_height))
+            
+            try:
+                # 直接显示，窗口名称已标注无人机编号（self.window_name="Drone-0"等）
+                cv2.imshow(self.window_name, resized_frame_for_display)
+            except cv2.error as e:
+                rospy.logerr(f"OpenCV window error: {e}")
+
+    def publish_image(self, imgdata, height, width):
+        image_temp = Image()
+        header = Header(stamp=rospy.Time.now())
+        header.frame_id = self.camera_frame
+        image_temp.height = height
+        image_temp.width = width
+        image_temp.encoding = 'bgr8'
+        image_temp.data = np.array(imgdata).tobytes()
+        image_temp.header = header
+        image_temp.step = width * 3
+        self.image_pub.publish(image_temp)
+
+
+def main():
+    rospy.init_node('yolov11_ros', anonymous=True)
+    yolo_dect = Yolo_Dect()
+    rospy.spin()
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,180 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- 参数配置 -->
+    <arg name="yolo_weight_path" default="/home/cty/catkin_ws/src/yolov11_ros/weights/best.pt"/>
+    <arg name="waypoint_file" default=""/>
+    <arg name="max_altitude" default="3.5"/>
+    <arg name="takeoff_altitude" default="3.0"/>  <!-- 固定3米高度 -->
+    <arg name="vehicle_ns" default="typhoon_h480_0"/>
+    <arg name="image_width" default="640"/>
+    <arg name="image_height" default="360"/>
+    <arg name="fx" default="205.46963709898583"/>
+    <arg name="fy" default="205.46963709898583"/>
+    <arg name="person_id" default="0"/>
+    
+    <!-- 全局参数：强制使用CPU -->
+    <param name="use_gpu" value="false"/>
+    
+    <!-- 人体跟踪节点 -->
+    <node name="human_tracker" pkg="yolov11_ros" type="human_tracker.py" output="screen">
+        <!-- 设置conda环境 -->
+        <env name="PATH" value="/home/cty/miniconda3/envs/yolov11/bin:$(env PATH)" />
+        <env name="PYTHONPATH" value="/home/cty/miniconda3/envs/yolov11/lib/python3.8/site-packages:$(env PYTHONPATH)" />
+        <env name="CONDA_DEFAULT_ENV" value="yolov11" />
+        
+        <!-- human_tracker 参数对齐脚本实现 -->
+        <param name="vehicle_ns" value="$(arg vehicle_ns)"/>
+        <param name="detection_confidence" value="0.3"/>
+        <param name="max_altitude" value="$(arg max_altitude)"/>
+        <param name="min_altitude" value="2.5"/>
+        <param name="image_width" value="$(arg image_width)"/>
+        <param name="image_height" value="$(arg image_height)"/>
+        <param name="fx" value="$(arg fx)"/>
+        <param name="fy" value="$(arg fy)"/>
+        <param name="person_id" value="$(arg person_id)"/>
+        <!-- 视觉伺服控制参数 -->
+        <param name="Kp_xy" value="1.0"/>
+        <param name="Kp_z" value="1.5"/>
+        <param name="control_z" value="true"/>
+        <param name="fixed_height" value="3.0"/>  <!-- 固定3米高度 -->
+        <param name="publish_xtdrone_cmd" value="false"/>
+        <param name="control_rate_hz" value="50"/>
+        <param name="Kp_forward" value="0.8"/>
+        <param name="target_size_ratio" value="0.15"/>
+        <param name="max_vel" value="2.0"/>
+        
+        <!-- 话题参数（可通过 vehicle_ns 自动拼接） -->
+        <param name="detection_topic" value="/yolov11/BoundingBoxes"/>
+        <param name="pose_topic" value="/$(arg vehicle_ns)/mavros/local_position/pose"/>
+        <param name="cam_pose_topic" value="/xtdrone/$(arg vehicle_ns)/cam_pose"/>
+    </node>
+    
+    <!-- 行人GPS发布节点 -->
+    <node name="human_gps_publisher" pkg="yolov11_ros" type="human_gps_publisher.py" output="screen">
+        <env name="PATH" value="/home/cty/miniconda3/envs/yolov11/bin:$(env PATH)" />
+        <env name="PYTHONPATH" value="/home/cty/miniconda3/envs/yolov11/lib/python3.8/site-packages:$(env PYTHONPATH)" />
+        <env name="CONDA_DEFAULT_ENV" value="yolov11" />
+
+        <param name="vehicle_ns" value="$(arg vehicle_ns)"/>
+        <param name="detection_topic" value="/yolov11/BoundingBoxes"/>
+        <param name="pose_topic" value="/$(arg vehicle_ns)/mavros/local_position/pose"/>
+        <param name="cam_pose_topic" value="/xtdrone/$(arg vehicle_ns)/cam_pose"/>
+        <param name="gps_topic" value="/$(arg vehicle_ns)/mavros/global_position/global"/>
+        <param name="rel_alt_topic" value="/$(arg vehicle_ns)/mavros/global_position/rel_alt"/>
+        <param name="fallback_cam_pitch_deg" value="-45.0"/>
+
+        <param name="image_width" value="$(arg image_width)"/>
+        <param name="image_height" value="$(arg image_height)"/>
+        <param name="fx" value="$(arg fx)"/>
+        <param name="fy" value="$(arg fy)"/>
+        <param name="person_id" value="$(arg person_id)"/>
+        <param name="detection_confidence" value="0.3"/>
+        <param name="pub_interval" value="0.2"/>
+        <!-- 几何计算参数 -->
+        <param name="avg_human_height_m" value="1.70"/>
+        <!-- 计分系统对接：发布 ActorInfo 到指定颜色/话题 -->
+        <param name="default_color" value="red"/>
+        <param name="red_publish_mode" value="round_robin"/>
+        <!-- 支持的颜色到话题映射 -->
+        <rosparam param="actor_topic_map">
+            green: "/actor_green_info"
+            blue: "/actor_blue_info"
+            brown: "/actor_brown_info"
+            white: "/actor_white_info"
+            red1: "/actor_red1_info"
+            red2: "/actor_red2_info"
+        </rosparam>
+    </node>
+
+    <!-- 航点飞行节点 -->
+    <node name="waypoint_flight" pkg="yolov11_ros" type="waypoint_flight.py" output="screen">
+        <!-- 设置conda环境（与其他节点保持一致） -->
+        <env name="PATH" value="/home/cty/miniconda3/envs/yolov11/bin:$(env PATH)" />
+        <env name="PYTHONPATH" value="/home/cty/miniconda3/envs/yolov11/lib/python3.8/site-packages:$(env PYTHONPATH)" />
+        <env name="CONDA_DEFAULT_ENV" value="yolov11" />
+
+        <!-- 命名空间参数 -->
+        <param name="vehicle_ns" value="$(arg vehicle_ns)"/>
+
+        <!-- 航点参数 -->
+        <param name="waypoint_file" value="$(arg waypoint_file)"/>
+        <param name="waypoint_reached_threshold" value="2.0"/>
+        <param name="waypoint_velocity" value="5.0"/>  <!-- 航点飞行速度 -->
+        <param name="waypoint_hover_time" value="1.0"/>  <!-- 到达航点停留1秒 -->
+        
+        <!-- 飞行参数 -->
+        <param name="takeoff_altitude" value="$(arg takeoff_altitude)"/>
+        <param name="max_altitude" value="$(arg max_altitude)"/>
+        <param name="min_altitude" value="2.5"/>
+        <param name="yaw_rate_limit" value="1.0"/>
+    </node>
+    
+    <!-- YOLO检测可视化节点 -->
+    <node name="yolo_v11" pkg="yolov11_ros" type="yolo_v11.py" output="screen">
+        <!-- 设置conda环境 -->
+        <env name="PATH" value="/home/cty/miniconda3/envs/yolov11/bin:$(env PATH)" />
+        <env name="PYTHONPATH" value="/home/cty/miniconda3/envs/yolov11/lib/python3.8/site-packages:$(env PYTHONPATH)" />
+        <env name="CONDA_DEFAULT_ENV" value="yolov11" />
+        
+        <param name="weight_path" value="$(arg yolo_weight_path)"/>
+        <param name="conf" value="0.5"/>
+        <param name="visualize" value="true"/>
+        
+        <!-- 重映射话题避免冲突 -->
+        <remap from="/yolov11/detection_image" to="/yolov11/visualization_image"/>
+        <!-- 图像话题重映射 -->
+        <remap from="/camera/color/image_raw" to="/$(arg vehicle_ns)/cgo3_camera/image_raw"/>
+    </node>
+    
+    <!-- 优雅避障系统节点 -->
+    <node name="obstacle_avoidance" pkg="yolov11_ros" type="obstacle_avoidance.py" output="screen">
+        <env name="PATH" value="/home/cty/miniconda3/envs/yolov11/bin:$(env PATH)" />
+        <env name="PYTHONPATH" value="/home/cty/miniconda3/envs/yolov11/lib/python3.8/site-packages:$(env PYTHONPATH)" />
+        <env name="CONDA_DEFAULT_ENV" value="yolov11" />
+
+        <!-- 系统参数 -->
+        <param name="vehicle_ns" value="$(arg vehicle_ns)"/>
+        
+        <!-- 避障距离阈值（基于场景优化）-->
+        <param name="waypoint_safe_distance" value="3.5"/>    <!-- 航点飞行：保守避障 -->
+        <param name="tracking_safe_distance" value="2.5"/>    <!-- 追踪模式：平衡避障 -->
+        <param name="emergency_distance" value="1.5"/>        <!-- 紧急距离 -->
+        <param name="recovery_distance" value="4.0"/>         <!-- 恢复距离 -->
+        
+        <!-- 避障机动参数 -->
+        <param name="waypoint_turn_angle" value="45"/>        <!-- 航点模式：大角度绕行 -->
+        <param name="tracking_turn_angle" value="25"/>        <!-- 追踪模式：小角度调整 -->
+        <param name="avoidance_speed" value="1.0"/>           <!-- 避障速度 -->
+        
+        <!-- 系统参数 -->
+        <param name="sonar_timeout" value="2.0"/>             <!-- 声纳数据超时 -->
+        <param name="control_frequency" value="50"/>          <!-- 高频控制，确保优先级 -->
+    </node>
+    
+    <!-- RoboCup算分节点 -->
+    <node name="score_cal" pkg="yolov11_ros" type="robocup_score_cal.py" output="screen" respawn="false">
+        <env name="PATH" value="/home/cty/miniconda3/envs/yolov11/bin:$(env PATH)" />
+        <env name="PYTHONPATH" value="/home/cty/miniconda3/envs/yolov11/lib/python3.8/site-packages:$(env PYTHONPATH)" />
+        <env name="CONDA_DEFAULT_ENV" value="yolov11" />
+    </node>
+    
+    <!-- 图像显示节点（可选，如果需要查看检测结果） -->
+    <!-- 
+    <node name="human_tracker_image_view" pkg="image_view" type="image_view" output="screen">
+        <remap from="image" to="/human_tracker/debug_image"/>
+    </node>
+    -->
+    
+    <!-- ROS话题监控节点（调试用） -->
+    <node name="topic_monitor" pkg="yolov11_ros" type="topic_monitor.py" output="screen" if="false">
+        <!-- 监控关键话题状态 -->
+        <param name="monitor_topics" value="[
+            '/human_tracker/status',
+            '/human_tracker/info', 
+            '/waypoint_flight/status',
+            '/mavros/local_position/pose',
+            '/mavros/state'
+        ]"/>
+    </node>
+    
+</launch>

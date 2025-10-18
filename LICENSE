@@ -1,0 +1,182 @@
+东华大学人工智能创新实验室专有许可证
+DHU AI Innovation Lab Proprietary License
+
+版权所有 © 2025 东华大学人工智能创新实验室
+Copyright © 2025 Donghua University AI Innovation Laboratory
+保留所有权利 - All Rights Reserved
+
+================================================================================
+
+本软件及相关文档（以下简称"软件"）的版权归东华大学人工智能创新实验室
+（以下简称"实验室"）所有。
+
+1. 授权范围
+
+本软件仅授权以下用途：
+
+  a) 东华大学人工智能创新实验室成员用于学习、研究和开发；
+  b) 2025年RoboCup机器人世界杯救援仿真赛相关活动；
+  c) 实验室认可的学术研究项目（需注明出处）。
+
+2. 使用条件
+
+使用本软件时，您必须：
+
+  a) 保留所有版权声明和许可证声明；
+  b) 在任何衍生作品或文档中明确标注软件来源；
+  c) 遵守本许可证的所有条款和条件。
+
+3. 使用限制
+
+未经实验室书面许可，严格禁止：
+
+  a) 将本软件用于任何商业目的；
+  b) 向第三方分发、转让或授权本软件或其副本；
+  c) 修改、合并、改编或翻译本软件用于其他竞赛或项目；
+  d) 对本软件进行反向工程、反编译或反汇编；
+  e) 删除或修改软件中的版权声明、商标或其他权利声明。
+
+4. 引用要求
+
+在学术论文、报告或其他文档中使用本软件的研究成果时，必须按以下格式引用：
+
+    本研究使用了东华大学人工智能创新实验室开发的
+    RoboCup 2025多无人机协同追踪系统
+    
+    项目地址: https://github.com/DHU-AIIL/robocup2025
+    Copyright © 2025 DHU AI Innovation Lab
+
+5. 第三方组件
+
+本软件包含以下第三方开源组件，这些组件保留其原有许可证：
+
+  - PX4 Autopilot (BSD-3-Clause License)
+    https://github.com/PX4/PX4-Autopilot
+    
+  - ROS (Robot Operating System) (BSD License)
+    https://www.ros.org/
+    
+  - YOLOv11 by Ultralytics (AGPL-3.0 License)
+    https://github.com/ultralytics/ultralytics
+    
+  - XTDrone (MIT License)
+    https://github.com/robin-shaun/XTDrone
+    
+  - Gazebo (Apache License 2.0)
+    http://gazebosim.org/
+
+使用本软件即表示您同意遵守这些第三方组件的相应许可证条款。
+
+6. 免责声明
+
+本软件按"原样"提供，不提供任何形式的明示或暗示担保，包括但不限于：
+
+  - 对适销性的保证；
+  - 对特定用途适用性的保证；
+  - 对不侵权的保证。
+
+在任何情况下，实验室或其成员均不对因使用或无法使用本软件而产生的任何
+直接、间接、偶然、特殊、惩罚性或后果性损害承担责任。
+
+7. 终止条款
+
+如果您违反本许可证的任何条款，您使用本软件的权利将自动终止，且您必须：
+
+  a) 立即停止使用本软件；
+  b) 删除或销毁所有本软件的副本。
+
+8. 法律适用
+
+本许可证受中华人民共和国法律管辖。因本许可证引起的任何争议应提交至
+上海市有管辖权的人民法院解决。
+
+9. 联系方式
+
+如需获得额外授权或有任何疑问，请联系：
+
+  东华大学人工智能创新实验室
+  Donghua University AI Innovation Laboratory
+  
+  地址：[请填写实验室地址]
+  邮箱：[请填写实验室邮箱]
+  网站：[请填写实验室网站]
+
+================================================================================
+
+ENGLISH VERSION
+
+DHU AI Innovation Lab Proprietary License
+
+Copyright © 2025 Donghua University AI Innovation Laboratory
+All Rights Reserved
+
+This software and associated documentation files (the "Software") are the 
+proprietary property of Donghua University AI Innovation Laboratory (the "Lab").
+
+1. Grant of License
+
+The Software is licensed solely for:
+
+  a) Learning, research, and development by Lab members;
+  b) Activities related to RoboCup 2025 Rescue Simulation League;
+  c) Lab-approved academic research projects (with proper attribution).
+
+2. Conditions
+
+You must:
+
+  a) Retain all copyright and license notices;
+  b) Clearly attribute the Software in any derivative works or documentation;
+  c) Comply with all terms and conditions of this license.
+
+3. Restrictions
+
+Without written permission from the Lab, you may NOT:
+
+  a) Use the Software for commercial purposes;
+  b) Distribute, transfer, or sublicense the Software;
+  c) Modify or adapt the Software for other competitions or projects;
+  d) Reverse engineer, decompile, or disassemble the Software;
+  e) Remove or alter copyright notices or proprietary rights statements.
+
+4. Attribution
+
+When publishing research results using this Software, you must cite:
+
+    This work uses the RoboCup 2025 Multi-UAV Cooperative Tracking System
+    developed by DHU AI Innovation Lab
+    
+    Project: https://github.com/DHU-AIIL/robocup2025
+    Copyright © 2025 DHU AI Innovation Lab
+
+5. Third-Party Components
+
+This Software includes third-party open-source components under their 
+respective licenses. See Section 5 in the Chinese version for details.
+
+6. Disclaimer
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+7. Termination
+
+This license terminates automatically upon any violation of its terms.
+
+8. Governing Law
+
+This license is governed by the laws of the People's Republic of China.
+
+9. Contact
+
+For additional licensing or inquiries:
+  
+  Donghua University AI Innovation Laboratory
+  Email: [Lab Email]
+  Website: [Lab Website]
+
+================================================================================
+
+生效日期 (Effective Date): 2025年10月 (October 2025)
+版本 (Version): 1.0

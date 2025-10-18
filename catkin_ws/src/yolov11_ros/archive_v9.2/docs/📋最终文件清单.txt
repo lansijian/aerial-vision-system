@@ -1,0 +1,79 @@
+================================================================================
+                ‼️ 最终文件清单 v9.2 ‼️
+================================================================================
+
+🎯 使用您之前能飞行的架构，只修复接口问题
+
+================================================================================
+                需要复制到虚拟机的文件（2个）
+================================================================================
+
+📄 文件1: human_tracker.py ⭐⭐⭐⭐⭐
+   本地: E:\robocup2025\catkin_ws\src\yolov11_ros\scripts\human_tracker.py
+   虚拟机: ~/catkin_ws/src/yolov11_ros/scripts/human_tracker.py
+   
+   权限: chmod +x ~/catkin_ws/src/yolov11_ros/scripts/human_tracker.py
+
+📄 文件2: multi_drone_flight.launch ⭐⭐⭐⭐
+   本地: E:\robocup2025\catkin_ws\src\yolov11_ros\launch\multi_drone_flight.launch
+   虚拟机: ~/catkin_ws/src/yolov11_ros/launch/multi_drone_flight.launch
+
+（可选）文件3: robocup_score_cal.py ⭐⭐⭐
+   本地: E:\robocup2025\catkin_ws\src\yolov11_ros\scripts\robocup_score_cal.py
+   虚拟机: ~/catkin_ws/src/yolov11_ros/scripts/robocup_score_cal.py
+   
+   权限: chmod +x ~/catkin_ws/src/yolov11_ros/scripts/robocup_score_cal.py
+
+================================================================================
+                虚拟机操作（复制粘贴执行）
+================================================================================
+
+cd ~/catkin_ws/src/yolov11_ros/scripts
+chmod +x human_tracker.py
+roslaunch yolov11_ros multi_drone_flight.launch num_drones:=2
+
+================================================================================
+                ✅ 预期效果
+================================================================================
+
+1. 无人机起飞 ✅（和之前一样）
+2. 航点飞行 ✅（和之前一样）
+3. 检测到人 → 暂停航点 ✅（修复后新增）
+4. 无人机追踪 ✅（修复后新增）
+
+================================================================================
+                🔍 关键检查
+================================================================================
+
+rostopic info /drone_0/human_tracker/status
+# Subscribers中必须有: /drone_0/waypoint_flight
+
+rostopic echo /drone_0/human_tracker/status
+# 追踪时应该: data: True
+
+waypoint_flight日志:
+# 检测到人后必须看到: "🎯 开始人体跟踪，暂停航点"
+
+================================================================================
+                🎯 控制架构（v9.2）
+================================================================================
+
+human_tracker:
+  → /drone_0/human_tracker/status (告知是否追踪)
+  → /drone_0/human_tracker/cmd_vel (提供追踪速度)
+
+waypoint_flight:
+  ← 订阅上述2个话题
+  → 根据status决定发布什么到MAVROS:
+     - status=True: 转发cmd_vel（追踪控制）
+     - status=False: 发布航点控制
+  → /typhoon_h480_0/mavros/setpoint_raw/local
+
+MAVROS:
+  → 控制无人机
+
+================================================================================
+
+v9.2 - 简化架构，避免控制冲突
+置信度: ⭐⭐⭐⭐⭐
+
