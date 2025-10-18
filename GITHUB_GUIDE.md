@@ -83,7 +83,7 @@ git commit -m "Initial commit: RoboCup 2025 Multi-UAV System
 - 协同避免重复机制
 - 完整的文档体系
 
-Copyright © 2025 DHU AI Innovation Lab"
+Copyright © 2025 Chen Tingyu & DHU Astraeus Team"
 ```
 
 ## 🌐 创建GitHub仓库

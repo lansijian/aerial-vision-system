@@ -2,6 +2,11 @@
 
 **东华大学人工智能创新实验室**
 
+## 🎯 本项目由东华大学 Astraeus 队开发
+RoboCup 2025多无人机协同追踪系统
+项目地址: https://github.com/lansijian/aerial-vision-system
+Copyright 2025 Chen Tingyu & DHU Astraeus Team
+
 ## 🎯 项目概述
 
 ### 项目名称
@@ -520,15 +525,16 @@ Week 12:    应急预留 + 最终测试
 
 ## 📞 联系方式
 
-**东华大学人工智能创新实验室**
+**东华大学 Astraeus 队**
 
-- 地址: [请填写]
-- 邮箱: [请填写]
-- 网站: [请填写]
+- 项目负责人: 陈庭宇 (Chen Tingyu)
+- 邮箱: 2033374848@qq.com
+- 项目地址: https://github.com/lansijian/aerial-vision-system
+- 实验室: 东华大学人工智能创新实验室
 
 ## 📄 版权声明
 
-**Copyright © 2025 东华大学人工智能创新实验室**
+**Copyright © 2025 陈庭宇 & 东华大学 Astraeus 队**
 
 本项目仅供以下用途：
 - ✅ 实验室内部学习和研究

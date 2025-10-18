@@ -209,7 +209,9 @@ roslaunch yolov11_ros multi_drone_system.launch
 
 ## 📄 版权声明
 
-**Copyright © 2025 东华大学人工智能创新实验室 (DHU AI Innovation Lab)**
+**Copyright © 2025 陈庭宇 & 东华大学 Astraeus 队**
+
+**Copyright © 2025 Chen Tingyu & DHU Astraeus Team**
 
 **All Rights Reserved - 保留所有权利**
 
@@ -233,10 +235,10 @@ roslaunch yolov11_ros multi_drone_system.launch
 如需使用本项目代码或成果，必须按以下格式标注来源：
 
 ```
-本项目使用了东华大学人工智能创新实验室开发的
+本项目使用了东华大学 Astraeus 队开发的
 RoboCup 2025多无人机协同追踪系统
 项目地址: https://github.com/lansijian/aerial-vision-system
-Copyright © 2025 DHU AI Innovation Lab
+Copyright © 2025 Chen Tingyu & DHU Astraeus Team
 ```
 
 ### 第三方组件
@@ -276,13 +278,14 @@ Copyright © 2025 DHU AI Innovation Lab
 
 ## 📞 联系我们
 
+- **团队**: 东华大学 Astraeus 队
+- **项目负责人**: 陈庭宇 (Chen Tingyu)
+- **邮箱**: 2033374848@qq.com
+- **GitHub**: https://github.com/lansijian/aerial-vision-system
 - **实验室**: 东华大学人工智能创新实验室
-- **飞书群**: 内部成员专用（加入请联系实验室）
-- **GitHub**: [个人维护，地址见上]
-- **注意**: 本项目无公开GitHub组织，由个人维护
 
 ---
 
-**Made with ❤️ by DHU AI Innovation Lab**
+**Made with ❤️ by DHU Astraeus Team**
 
 *最后更新: 2025年10月*

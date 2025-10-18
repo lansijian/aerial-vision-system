@@ -1,22 +1,23 @@
-东华大学人工智能创新实验室专有许可证
-DHU AI Innovation Lab Proprietary License
+东华大学 Astraeus 队专有许可证
+DHU Astraeus Team Proprietary License
 
-版权所有 © 2025 东华大学人工智能创新实验室
-Copyright © 2025 Donghua University AI Innovation Laboratory
+版权所有 © 2025 陈庭宇 & 东华大学 Astraeus 队
+Copyright © 2025 Chen Tingyu & DHU Astraeus Team
 保留所有权利 - All Rights Reserved
 
 ================================================================================
 
-本软件及相关文档（以下简称"软件"）的版权归东华大学人工智能创新实验室
-（以下简称"实验室"）所有。
+本软件及相关文档（以下简称"软件"）的版权归陈庭宇及东华大学 Astraeus 队
+（以下简称"团队"）所有。
 
 1. 授权范围
 
 本软件仅授权以下用途：
 
-  a) 东华大学人工智能创新实验室成员用于学习、研究和开发；
-  b) 2025年RoboCup机器人世界杯救援仿真赛相关活动；
-  c) 实验室认可的学术研究项目（需注明出处）。
+  a) 东华大学 Astraeus 队成员用于学习、研究和开发；
+  b) 东华大学人工智能创新实验室成员用于学习和研究；
+  c) 2025年RoboCup机器人世界杯救援仿真赛相关活动；
+  d) 团队认可的学术研究项目（需注明出处）。
 
 2. 使用条件
 
@@ -28,7 +29,7 @@ Copyright © 2025 Donghua University AI Innovation Laboratory
 
 3. 使用限制
 
-未经实验室书面许可，严格禁止：
+未经团队书面许可，严格禁止：
 
   a) 将本软件用于任何商业目的；
   b) 向第三方分发、转让或授权本软件或其副本；
@@ -40,11 +41,11 @@ Copyright © 2025 Donghua University AI Innovation Laboratory
 
 在学术论文、报告或其他文档中使用本软件的研究成果时，必须按以下格式引用：
 
-    本研究使用了东华大学人工智能创新实验室开发的
+    本研究使用了东华大学 Astraeus 队开发的
     RoboCup 2025多无人机协同追踪系统
     
-    项目地址: https://github.com/DHU-AIIL/robocup2025
-    Copyright © 2025 DHU AI Innovation Lab
+    项目地址: https://github.com/lansijian/aerial-vision-system
+    Copyright © 2025 Chen Tingyu & DHU Astraeus Team
 
 5. 第三方组件
 
@@ -75,7 +76,7 @@ Copyright © 2025 Donghua University AI Innovation Laboratory
   - 对特定用途适用性的保证；
   - 对不侵权的保证。
 
-在任何情况下，实验室或其成员均不对因使用或无法使用本软件而产生的任何
+在任何情况下，团队或其成员均不对因使用或无法使用本软件而产生的任何
 直接、间接、偶然、特殊、惩罚性或后果性损害承担责任。
 
 7. 终止条款
@@ -94,32 +95,32 @@ Copyright © 2025 Donghua University AI Innovation Laboratory
 
 如需获得额外授权或有任何疑问，请联系：
 
-  东华大学人工智能创新实验室
-  Donghua University AI Innovation Laboratory
+  东华大学 Astraeus 队
+  DHU Astraeus Team
   
-  地址：[请填写实验室地址]
-  邮箱：[请填写实验室邮箱]
-  网站：[请填写实验室网站]
+  项目负责人：陈庭宇 (Chen Tingyu)
+  邮箱：2033374848@qq.com
+  项目地址：https://github.com/lansijian/aerial-vision-system
 
 ================================================================================
 
 ENGLISH VERSION
 
-DHU AI Innovation Lab Proprietary License
+DHU Astraeus Team Proprietary License
 
-Copyright © 2025 Donghua University AI Innovation Laboratory
+Copyright © 2025 Chen Tingyu & DHU Astraeus Team
 All Rights Reserved
 
 This software and associated documentation files (the "Software") are the 
-proprietary property of Donghua University AI Innovation Laboratory (the "Lab").
+proprietary property of Chen Tingyu and DHU Astraeus Team (the "Team").
 
 1. Grant of License
 
 The Software is licensed solely for:
 
-  a) Learning, research, and development by Lab members;
+  a) Learning, research, and development by DHU Astraeus Team members;
   b) Activities related to RoboCup 2025 Rescue Simulation League;
-  c) Lab-approved academic research projects (with proper attribution).
+  c) Team-approved academic research projects (with proper attribution).
 
 2. Conditions
 
@@ -131,7 +132,7 @@ You must:
 
 3. Restrictions
 
-Without written permission from the Lab, you may NOT:
+Without written permission from the Team, you may NOT:
 
   a) Use the Software for commercial purposes;
   b) Distribute, transfer, or sublicense the Software;
@@ -144,10 +145,10 @@ Without written permission from the Lab, you may NOT:
 When publishing research results using this Software, you must cite:
 
     This work uses the RoboCup 2025 Multi-UAV Cooperative Tracking System
-    developed by DHU AI Innovation Lab
+    developed by DHU Astraeus Team
     
-    Project: https://github.com/DHU-AIIL/robocup2025
-    Copyright © 2025 DHU AI Innovation Lab
+    Project: https://github.com/lansijian/aerial-vision-system
+    Copyright © 2025 Chen Tingyu & DHU Astraeus Team
 
 5. Third-Party Components
 
@@ -172,9 +173,10 @@ This license is governed by the laws of the People's Republic of China.
 
 For additional licensing or inquiries:
   
-  Donghua University AI Innovation Laboratory
-  Email: [Lab Email]
-  Website: [Lab Website]
+  DHU Astraeus Team
+  Project Lead: Chen Tingyu
+  Email: 2033374848@qq.com
+  Project: https://github.com/lansijian/aerial-vision-system
 
 ================================================================================
 
