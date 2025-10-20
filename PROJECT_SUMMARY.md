@@ -1,20 +1,20 @@
-# RoboCup 2025 项目总结
+# 多旋翼无人机集群协同搜索仿真项目总结 - 2025中国机器人大赛
 
 **东华大学人工智能创新实验室**
 
 ## 🎯 本项目由东华大学 Astraeus 队开发
-RoboCup 2025多无人机协同追踪系统
+多旋翼无人机集群协同搜索仿真系统
 项目地址: https://github.com/lansijian/aerial-vision-system
 Copyright 2025 Chen Tingyu & DHU Astraeus Team
 
 ## 🎯 项目概述
 
 ### 项目名称
-RoboCup 2025 多无人机协同人员追踪系统
+多旋翼无人机集群协同搜索仿真 - 2025中国机器人大赛暨RoboCup机器人世界杯中国赛
 
 ### 比赛信息
-- **赛事**: RoboCup 2025 Robot World Cup
-- **组别**: Rescue Simulation League (救援仿真联盟)
+- **赛事**: 2025中国机器人大赛暨RoboCup机器人世界杯中国赛
+- **赛项**: 多旋翼无人机集群协同搜索仿真
 - **任务**: 城市环境中的多无人机协同人员搜索与救援
 
 ### 团队信息

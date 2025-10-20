@@ -16,7 +16,7 @@ Copyright © 2025 Chen Tingyu & DHU Astraeus Team
 
   a) 东华大学 Astraeus 队成员用于学习、研究和开发；
   b) 东华大学人工智能创新实验室成员用于学习和研究；
-  c) 2025年RoboCup机器人世界杯多旋翼无人机集群协同搜索仿真赛相关活动；
+  c) 2025中国机器人大赛暨RoboCup机器人世界杯中国赛（多旋翼无人机集群协同搜索仿真赛项）相关活动；
   d) 团队认可的学术研究项目（需注明出处）。
 
 2. 使用条件
@@ -42,7 +42,7 @@ Copyright © 2025 Chen Tingyu & DHU Astraeus Team
 在学术论文、报告或其他文档中使用本软件的研究成果时，必须按以下格式引用：
 
     本研究使用了东华大学 Astraeus 队开发的
-    RoboCup 2025多无人机协同追踪系统
+    多旋翼无人机集群协同搜索仿真系统 (2025中国机器人大赛)
     
     项目地址: https://github.com/lansijian/aerial-vision-system
     Copyright © 2025 Chen Tingyu & DHU Astraeus Team
@@ -120,7 +120,7 @@ The Software is licensed solely for:
 
   a) Learning, research, and development by DHU Astraeus Team members;
   b) Learning and research by DHU AI Innovation Laboratory members;
-  c) Activities related to RoboCup 2025 Rescue Simulation League;
+  c) Activities related to 2025 China Robot Competition Multi-rotor UAV Cluster Cooperative Search Simulation;
   d) Team-approved academic research projects (with proper attribution).
 
 2. Conditions
@@ -145,8 +145,8 @@ Without written permission from the Team, you may NOT:
 
 When publishing research results using this Software, you must cite:
 
-    This work uses the RoboCup 2025 Multi-UAV Cooperative Tracking System
-    developed by DHU Astraeus Team
+    This work uses the Multi-rotor UAV Cluster Cooperative Search Simulation System
+    developed by DHU Astraeus Team (2025 China Robot Competition)
     
     Project: https://github.com/lansijian/aerial-vision-system
     Copyright © 2025 Chen Tingyu & DHU Astraeus Team

@@ -1,4 +1,4 @@
-# RoboCup 2025 - 多无人机协同人员追踪系统
+# 多旋翼无人机集群协同搜索仿真 - 2025 中国机器人大赛暨RoboCup机器人世界杯中国赛
 
 [![License](https://img.shields.io/badge/License-DHU--AIIL-blue.svg)](LICENSE)
 [![ROS](https://img.shields.io/badge/ROS-Melodic-green.svg)](http://wiki.ros.org/melodic)
@@ -21,7 +21,7 @@
 
 ## 📋 项目简介
 
-本项目是东华大学人工智能创新实验室为RoboCup 2025机器人世界杯救援仿真赛开发的多无人机协同人员追踪系统。系统实现了6架无人机在城市环境中自主巡逻、检测并协同追踪不同颜色衣服的行人目标。
+本项目是东华大学人工智能创新实验室为2025中国机器人大赛暨RoboCup机器人世界杯中国赛（多旋翼无人机集群协同搜索仿真赛项）开发的多无人机协同人员追踪系统。系统实现了6架无人机在城市环境中自主巡逻、检测并协同追踪不同颜色衣服的行人目标。
 
 ### 核心特性
 
@@ -213,7 +213,7 @@ roslaunch yolov11_ros multi_drone_system.launch
 
 ## 🎯 比赛成绩
 
-- **赛题**: RoboCup 2025 Rescue Simulation League
+- 📊 **完整的比赛方案**：满足2025中国机器人大赛多旋翼无人机集群协同搜索仿真赛项所有要求
 - **任务**: 城市环境中的人员搜索与救援
 - **团队**: 东华大学人工智能创新实验室
 
