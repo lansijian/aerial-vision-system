@@ -2,6 +2,30 @@
 
 本指南将指导您从零开始配置RoboCup 2025多无人机协同追踪系统的完整开发环境。
 
+## ⚠️ 重要说明
+
+**本文档中的命令仅供参考，实际安装请以官方文档为准！**
+
+### 📚 官方文档链接（必读）
+
+- **XTDrone使用文档**: [https://www.yuque.com/xtdrone/manual_cn](https://www.yuque.com/xtdrone/manual_cn)
+- **PX4 1.13版本一键安装脚本**: [https://www.yuque.com/xtdrone/manual_cn/px4_1.13_installation](https://www.yuque.com/xtdrone/manual_cn/px4_1.13_installation)
+
+### 📖 本仓库文档说明
+
+仓库中包含的PX4_Firmware和XTDrone文档**仅作为参考**，主要包含：
+- ✅ 针对2025年赛题的特殊改动（**重点：typhoon_h480机型的云台改动**）
+- ✅ 项目特定的配置说明
+- ⚠️ **环境安装请使用上述官方文档，不要直接使用仓库中的安装说明**
+
+### 🔧 关键配置要求
+
+- **ROS工作空间编译**: 必须使用 `catkin build` 命令
+- **PX4版本**: PX4 1.13（使用官方一键安装脚本）
+- **Python环境**: 使用Conda虚拟环境，Python 3.8.10
+
+---
+
 ## 📋 系统要求
 
 ### 硬件要求
@@ -111,31 +135,43 @@ sudo apt install -y \
     ros-$ROS_DISTRO-tf2-geometry-msgs
 ```
 
-### 步骤 4: 安装PX4 Autopilot
+### 步骤 4: 安装PX4 Autopilot（使用官方一键安装脚本）
+
+**⚠️ 重要：请使用XTDrone官方提供的PX4 1.13版本一键安装脚本！**
+
+#### 推荐方法：使用官方一键安装脚本
+
+访问官方文档并按照说明操作：
+- 📘 [PX4 1.13版本一键安装脚本（Beta测试版）](https://www.yuque.com/xtdrone/manual_cn/px4_1.13_installation)
+
+**优势**：
+- ✅ 自动配置所有依赖
+- ✅ 版本兼容性保证
+- ✅ 避免常见安装错误
+- ✅ 节省时间（相比手动配置）
+
+#### 参考命令（仅供参考，以官方文档为准）
 
 ```bash
+# 以下命令仅供参考，实际操作请参考官方文档
+
 # 克隆PX4仓库
 cd ~
 git clone https://github.com/PX4/PX4-Autopilot.git
 cd PX4-Autopilot
-git checkout v1.12.3  # 使用稳定版本
+git checkout v1.13.3  # PX4 1.13版本
 
-# 运行安装脚本
+# 运行官方一键安装脚本
 bash ./Tools/setup/ubuntu.sh
 
-# 安装依赖
-sudo apt install -y \
-    python3-pip \
-    python3-dev \
-    libgstreamer1.0-dev \
-    gstreamer1.0-plugins-base \
-    gstreamer1.0-plugins-good
-
-# 编译PX4
+# 编译PX4 SITL
 make px4_sitl_default gazebo
 ```
 
-**注意**: 首次编译可能需要20-30分钟。
+**注意**: 
+- 首次编译可能需要20-30分钟
+- 具体步骤和参数以官方文档为准
+- 如遇到问题，请查阅XTDrone官方文档的FAQ部分
 
 ### 步骤 5: 安装Conda并配置YOLOv11环境
 
@@ -261,26 +297,37 @@ echo "export PX4_HOME=~/robocup2025/2025参赛项目/PX4_Firmware" >> ~/.bashrc
 
 ### 步骤 8: 配置XTDrone
 
+**参考官方文档**: [XTDrone使用文档](https://www.yuque.com/xtdrone/manual_cn)
+
 ```bash
 cd ~/robocup2025/2025参赛项目/XTDrone
 
-# 安装XTDrone依赖
+# 安装XTDrone依赖（以官方文档为准）
 pip3 install numpy matplotlib pillow
 ```
 
-### 步骤 9: 编译ROS工作空间
+**注意**: 
+- 仓库中的XTDrone文档主要包含针对2025年赛题的特殊改动
+- 完整的安装和使用说明请参考XTDrone官方文档
+
+### 步骤 9: 编译ROS工作空间（必须使用catkin build）
+
+**⚠️ 重要：本项目必须使用 `catkin build` 编译，不能使用 `catkin_make`！**
 
 ```bash
 cd ~/robocup2025/2025参赛项目/catkin_ws
 
-# 安装依赖
+# 确保在yolov11 conda环境中
+conda activate yolov11
+
+# 安装catkin_tools（如果未安装）
+pip install catkin_tools
+
+# 安装ROS依赖
 rosdep install --from-paths src --ignore-src -r -y
 
-# 编译
+# 使用catkin build编译（必须）
 catkin build
-
-# 如果catkin build不可用，使用catkin_make
-# catkin_make
 
 # 配置环境
 echo "source ~/robocup2025/2025参赛项目/catkin_ws/devel/setup.bash" >> ~/.bashrc

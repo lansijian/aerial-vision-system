@@ -138,9 +138,15 @@
 
 ### 安装步骤
 
+**⚠️ 重要提示**：
+- 本文档中的命令仅供快速参考，实际安装请以**官方文档为准**
+- 环境配置请使用 [XTDrone官方文档](https://www.yuque.com/xtdrone/manual_cn)
+- PX4安装请使用 [PX4 1.13一键安装脚本](https://www.yuque.com/xtdrone/manual_cn/px4_1.13_installation)
+
 详细的安装和配置指南请参考：
-- 📘 [INSTALLATION.md](INSTALLATION.md) - 完整安装指南
+- 📘 [INSTALLATION.md](INSTALLATION.md) - 完整安装指南（包含官方文档链接）
 - 🐍 [CONDA_SETUP.md](CONDA_SETUP.md) - Conda环境配置详解（**必读**）
+- 🌐 [XTDrone官方文档](https://www.yuque.com/xtdrone/manual_cn) - **权威安装指南**
 
 ```bash
 # 0. 配置YOLOv11 Conda环境（Python 3.8.10）- 必须先完成！
@@ -157,14 +163,17 @@ cd aerial-vision-system
 cd catkin_ws
 rosdep install --from-paths src --ignore-src -r -y
 
-# 3. 编译工作空间
-catkin build
+# 3. 编译工作空间（必须使用catkin build）
+catkin build  # 注意：不能使用catkin_make
 
 # 4. 配置环境
 source devel/setup.bash
 ```
 
-**⚠️ 重要**: YOLOv11需要使用conda环境，统一Python 3.8.10版本！
+**关键要求**：
+- ⚠️ YOLOv11需要使用conda环境，统一Python 3.8.10版本
+- ⚠️ ROS工作空间必须使用 `catkin build` 编译
+- ⚠️ PX4使用1.13版本，推荐使用官方一键安装脚本
 
 ### 运行系统
 
