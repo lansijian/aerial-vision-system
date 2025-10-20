@@ -16,19 +16,31 @@
 1. ✅ Ubuntu 18.04/20.04 已安装
 2. ✅ ROS Melodic/Noetic 已配置
 3. ✅ PX4、MAVROS、Gazebo 已安装
-4. ✅ Python 3.8+ 和相关依赖已安装
+4. ✅ **Conda环境已配置** (Python 3.8.10 + YOLOv11)
+5. ✅ **yolov11 conda环境已激活**
 
 > **未完成安装？** 请先查看 [INSTALLATION.md](INSTALLATION.md)
+> 
+> **重要**: 必须使用conda环境，统一Python 3.8.10版本
 
 ## 🚀 启动步骤
 
 ### 步骤 1: 准备环境
 
-打开终端，设置工作目录：
+打开终端，激活conda环境并设置工作目录：
 
 ```bash
+# 激活YOLOv11 conda环境（Python 3.8.10）
+conda activate yolov11
+
+# 验证Python版本
+python --version  # 应该显示 Python 3.8.10
+
+# 设置工作目录
 cd /path/to/robocup2025/2025参赛项目
 ```
+
+**重要**: 每个新终端都需要先激活conda环境！
 
 ### 步骤 2: 启动PX4仿真
 

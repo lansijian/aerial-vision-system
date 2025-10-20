@@ -138,9 +138,17 @@
 
 ### 安装步骤
 
-详细的安装和配置指南请参考：[INSTALLATION.md](INSTALLATION.md)
+详细的安装和配置指南请参考：
+- 📘 [INSTALLATION.md](INSTALLATION.md) - 完整安装指南
+- 🐍 [CONDA_SETUP.md](CONDA_SETUP.md) - Conda环境配置详解（**必读**）
 
 ```bash
+# 0. 配置YOLOv11 Conda环境（Python 3.8.10）- 必须先完成！
+# 详见: CONDA_SETUP.md
+conda create -n yolov11 python=3.8.10 -y
+conda activate yolov11
+pip install ultralytics==8.0.200  # 根据GPU/CPU选择不同的PyTorch版本
+
 # 1. 克隆项目
 git clone https://github.com/lansijian/aerial-vision-system.git
 cd aerial-vision-system
@@ -155,6 +163,8 @@ catkin build
 # 4. 配置环境
 source devel/setup.bash
 ```
+
+**⚠️ 重要**: YOLOv11需要使用conda环境，统一Python 3.8.10版本！
 
 ### 运行系统
 

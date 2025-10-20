@@ -8,9 +8,10 @@ RoboCup 2025多无人机协同追踪系统 - 完整文档导航
 |------|------|------|
 | [README.md](README.md) | **项目总览** | 5分钟 |
 | [INSTALLATION.md](INSTALLATION.md) | **安装配置指南** | 30分钟 |
+| [🐍 CONDA_SETUP.md](CONDA_SETUP.md) | **Conda环境配置详解（必读）** | 15分钟 |
 | [QUICK_START.md](QUICK_START.md) | **快速启动教程** | 10分钟 |
 
-**推荐路径**: README → INSTALLATION → QUICK_START
+**推荐路径**: README → INSTALLATION → **CONDA_SETUP** → QUICK_START
 
 ## 📖 核心文档
 
@@ -23,6 +24,7 @@ RoboCup 2025多无人机协同追踪系统 - 完整文档导航
 | [README.md](README.md) | 项目介绍、系统架构、快速开始 | 所有人 ⭐⭐⭐⭐⭐ |
 | [LICENSE](LICENSE) | 版权声明和使用限制 | 所有人 ⭐⭐⭐⭐⭐ |
 | [INSTALLATION.md](INSTALLATION.md) | 从零开始的完整安装指南 | 新手 ⭐⭐⭐⭐⭐ |
+| [🐍 CONDA_SETUP.md](CONDA_SETUP.md) | **Conda环境配置（Python 3.8.10）** | **新手** ⭐⭐⭐⭐⭐ |
 | [QUICK_START.md](QUICK_START.md) | 5分钟快速启动系统 | 新手 ⭐⭐⭐⭐⭐ |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | 贡献代码的规范和流程 | 开发者 ⭐⭐⭐⭐ |
 | [DOCS_INDEX.md](DOCS_INDEX.md) | 本文档 - 文档导航 | 所有人 ⭐⭐⭐ |

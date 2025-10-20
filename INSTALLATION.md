@@ -137,31 +137,100 @@ make px4_sitl_default gazebo
 
 **注意**: 首次编译可能需要20-30分钟。
 
-### 步骤 5: 安装Python依赖
+### 步骤 5: 安装Conda并配置YOLOv11环境
+
+#### 5.1 安装Miniconda
 
 ```bash
-# 升级pip
-python3 -m pip install --upgrade pip
+# 下载Miniconda安装脚本
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 
-# 安装PyTorch (CPU版本)
-pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+# 安装Miniconda
+bash Miniconda3-latest-Linux-x86_64.sh
 
-# 如果有NVIDIA GPU，安装CUDA版本
-# pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+# 按照提示完成安装，建议安装在默认位置: ~/miniconda3
+# 安装完成后重启终端或执行:
+source ~/.bashrc
 
-# 安装YOLOv11和依赖
-pip3 install ultralytics opencv-python numpy
+# 验证安装
+conda --version
+```
+
+#### 5.2 创建YOLOv11专用环境 (Python 3.8.10)
+
+**根据您的系统选择：**
+
+##### 选项A: 有GPU的系统（推荐，显著提升检测速度）
+
+```bash
+# 创建conda环境，指定Python 3.8.10
+conda create -n yolov11 python=3.8.10 -y
+
+# 激活环境
+conda activate yolov11
+
+# 安装PyTorch with CUDA支持 (CUDA 11.8)
+pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cu118
+
+# 验证GPU可用
+python -c "import torch; print(f'CUDA Available: {torch.cuda.is_available()}'); print(f'GPU Name: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"N/A\"}')"
+```
+
+##### 选项B: 无GPU的系统（虚拟机/双系统CPU版本）
+
+```bash
+# 创建conda环境，指定Python 3.8.10
+conda create -n yolov11 python=3.8.10 -y
+
+# 激活环境
+conda activate yolov11
+
+# 安装PyTorch CPU版本
+pip install torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2 --index-url https://download.pytorch.org/whl/cpu
+
+# 验证安装
+python -c "import torch; print(f'PyTorch Version: {torch.__version__}')"
+```
+
+#### 5.3 安装YOLOv11和ROS依赖
+
+```bash
+# 确保在yolov11环境中
+conda activate yolov11
+
+# 安装YOLOv11和计算机视觉依赖
+pip install ultralytics==8.0.200
+pip install opencv-python==4.8.1.78
+pip install numpy==1.24.3
 
 # 安装ROS Python工具
-pip3 install \
+pip install \
     catkin_tools \
     rospkg \
-    rospy \
-    sensor_msgs \
-    geometry_msgs \
-    std_msgs \
-    cv_bridge
+    empy \
+    pyyaml
+
+# 验证安装
+python -c "from ultralytics import YOLO; print('✅ YOLOv11 安装成功')"
 ```
+
+#### 5.4 配置环境自动激活
+
+```bash
+# 添加到 ~/.bashrc，每次打开终端自动激活yolov11环境
+echo "" >> ~/.bashrc
+echo "# Auto-activate YOLOv11 conda environment" >> ~/.bashrc
+echo "conda activate yolov11" >> ~/.bashrc
+
+# 重新加载配置
+source ~/.bashrc
+```
+
+**重要提示**:
+- 🔴 **统一使用Python 3.8.10**：确保与ROS的兼容性
+- 🟢 **GPU版本**：检测速度快3-5倍，适合多无人机系统
+- 🟡 **CPU版本**：适合测试和开发，实时性较差
+- 🔵 **虚拟机用户**：建议使用CPU版本，虚拟机GPU直通配置复杂
 
 ### 步骤 6: 克隆项目代码
 
